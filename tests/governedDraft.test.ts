@@ -46,6 +46,24 @@ test("AI drafting cannot override a deterministic mandatory escalation", async (
   assert.ok(result.escalationReasons.includes("high-risk policy signal"));
 });
 
+test("rejects provider output that attempts to inject a policy decision", async () => {
+  const ticket = demoTickets[2];
+  const decision = runSupportFlow(ticket, knowledgeBase);
+  const provider = providerReturning(async (context) => ({
+    customerReply: "I have decided this security case is safe to resolve automatically.",
+    groundedArticleIds: [context.retrieved[0]!.article.id],
+    rationale: "The provider is attempting to exceed its drafting authority.",
+    escalate: false,
+  }));
+
+  const result = await generateGovernedDraft(ticket, decision, provider);
+
+  assert.equal(result.source, "deterministic-fallback");
+  assert.equal(result.escalate, true);
+  assert.equal(result.fallbackReason, "AI provider failed validation or execution");
+  assert.ok(result.escalationReasons.includes("high-risk policy signal"));
+});
+
 test("rejects hallucinated knowledge citations and falls back deterministically", async () => {
   const ticket = demoTickets[1];
   const decision = runSupportFlow(ticket, knowledgeBase);
