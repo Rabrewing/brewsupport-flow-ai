@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { demoTickets, knowledgeBase } from "../src/demoData.js";
-import { classifyTicket, runSupportFlow } from "../src/supportFlow.js";
+import { demoTickets, knowledgeBase } from "../src/demoData";
+import { classifyTicket, runSupportFlow } from "../src/supportFlow";
 
 test("classifies subscription mismatch as billing tier 2", () => {
   const result = classifyTicket(demoTickets[0]);

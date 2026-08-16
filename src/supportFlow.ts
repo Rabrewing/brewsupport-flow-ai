@@ -5,7 +5,7 @@ import type {
   SupportDecision,
   SupportTicket,
   TicketCategory,
-} from "./types.js";
+} from "./types";
 
 const HIGH_RISK_TERMS = [
   "chargeback",

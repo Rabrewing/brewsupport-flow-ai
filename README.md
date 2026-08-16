@@ -12,36 +12,73 @@ The project is intentionally built with **synthetic customer data and mock billi
 
 Modern support teams should not use AI simply to generate faster replies. A trustworthy support workflow needs retrieval, confidence thresholds, escalation boundaries, auditability, and feedback loops into product and engineering.
 
-BrewSupport Flow AI demonstrates that operating model in a small, understandable codebase.
+BrewSupport Flow AI demonstrates that operating model in a small, understandable codebase with an interactive support-operations dashboard.
 
 ## Workflow
 
-1. **Classify** the incoming ticket by category, severity, intent, and likely support tier.
+1. **Classify** the incoming ticket by category, severity, and likely support tier.
 2. **Retrieve** relevant knowledge-base context.
 3. **Draft** a grounded customer response using the retrieved context.
 4. **Score confidence** based on retrieval quality, ambiguity, risk, and ticket category.
-5. **Escalate** when confidence is low or the ticket involves billing disputes, security, account access, data loss, or other high-risk conditions.
+5. **Escalate** when confidence is low or the ticket involves disputes, security, account risk, data loss, technical failures, or other high-risk conditions.
 6. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
+7. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
 
 ## Current architecture
 
+- Next.js 16.3.1 + React 19.2.8
 - TypeScript
 - Deterministic ticket classifier
 - Lightweight knowledge-base retrieval
 - Confidence and risk scoring
 - Human-in-the-loop escalation policy
+- Grounded response drafting
 - Voice-of-Customer theme extraction
-- Synthetic demo tickets
-- Unit tests
+- Responsive support dashboard
+- Synthetic demo tickets and knowledge articles
+- Policy-focused unit tests
+- GitHub Actions validation for production dependency audit, tests, strict type checking, and production build
 
-Planned application layer:
+## Dashboard
 
-- Next.js + React support dashboard
-- OpenAI-powered grounded drafting behind a provider abstraction
-- Structured AI outputs
-- Retrieval/embedding adapter
-- Ticket queue and resolution analytics
-- Mock Stripe support scenarios
+The BSF-1 dashboard demonstrates:
+
+- Ticket queue and case-detail workspace
+- Tier 1 / Tier 2 / Tier 3 classification
+- Severity and risk signals
+- Retrieved KB evidence with match scores
+- Confidence visualization
+- AI-assisted grounded draft
+- Approve / escalate workflow
+- Deterministic blocking of unsafe approvals
+- Voice-of-Customer intelligence
+- Synthetic support-operations metrics
+
+The UI deliberately consumes decisions from the support engine instead of reproducing risk logic in React. **AI may recommend; deterministic policy retains authority.**
+
+## Roadmap
+
+### BSF-2 — Governed AI Provider Layer
+- Provider-neutral drafting interface
+- OpenAI adapter via environment credentials only
+- Structured output validation
+- Deterministic policy remains final authority
+- Safe fallback when AI is unavailable or invalid
+
+### BSF-3 — Semantic RAG
+- Embeddings
+- Semantic KB retrieval
+- Retrieval confidence and grounding evidence
+
+### BSF-4 — Stripe Support Simulator
+- Synthetic refund, payment failure, cancellation, upgrade, entitlement, invoice, and dispute scenarios
+- No real customer or Stripe data
+
+### BSF-5 — Support Operations Intelligence
+- Throughput and escalation analytics
+- Recurring issue patterns
+- Confidence distribution
+- Voice-of-Customer summaries
 
 ## Public portfolio safety
 
@@ -60,23 +97,28 @@ See `AGENTS.md` for the repository engineering constitution.
 
 ```bash
 npm install
+npm audit --omit=dev --audit-level=high
 npm test
-npm run demo
+npm run typecheck
+npm run build
+npm run dev
 ```
 
-## Example
+Then open the local Next.js application in your browser.
+
+## Example support decision
 
 ```text
 Customer: I upgraded to Pro but my account still shows Starter.
 
-Classification: billing / entitlement
+Classification: billing
 Support tier: Tier 2
 Risk: medium
-KB retrieval: subscription entitlement refresh + checkout lifecycle
-Confidence: 0.86
-Action: draft response + account-state verification
-Escalation: no, unless account state contradicts billing state
-VOC theme: subscription state synchronization
+KB retrieval: subscription entitlement guidance
+Confidence: calculated from evidence + risk
+Action: grounded draft + human-visible evidence
+Escalation: policy-driven
+VOC theme: subscription lifecycle
 ```
 
 ## Author

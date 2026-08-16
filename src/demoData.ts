@@ -1,4 +1,4 @@
-import type { KnowledgeArticle, SupportTicket } from "./types.js";
+import type { KnowledgeArticle, SupportTicket } from "./types";
 
 export const knowledgeBase: KnowledgeArticle[] = [
   {

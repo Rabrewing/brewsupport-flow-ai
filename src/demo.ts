@@ -1,5 +1,5 @@
-import { demoTickets, knowledgeBase } from "./demoData.js";
-import { runSupportFlow } from "./supportFlow.js";
+import { demoTickets, knowledgeBase } from "./demoData";
+import { runSupportFlow } from "./supportFlow";
 
 for (const ticket of demoTickets) {
   const result = runSupportFlow(ticket, knowledgeBase);

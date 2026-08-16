@@ -1,16 +1,26 @@
 {
   "name": "brewsupport-flow-ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Public portfolio reference implementation for trustworthy AI-assisted SaaS support automation.",
   "type": "module",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "demo": "tsx src/demo.ts",
     "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "next": "16.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
