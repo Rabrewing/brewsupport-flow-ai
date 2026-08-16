@@ -1,12 +1,11 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-3 / Semantic RAG: IMPLEMENTED / CERTIFICATION IN PROGRESS**
+**BSF-3 / Semantic RAG: MERGED / CERTIFIED**
 
-Branch: `bsf-3-semantic-rag`  
-PR: #3
+Merged to `main` via PR #3 on 2026-08-16.
 
-BSF-1 and BSF-2 remain merged and certified on `main`.
+BSF-1, BSF-2, and BSF-3 are merged and certified on `main`.
 
 ## Implemented through BSF-3
 - Public-portfolio engineering constitution and IP boundaries
@@ -70,16 +69,16 @@ Tier 3, high-risk, and low-confidence cases remain human-governed regardless of 
 - Public route accepts synthetic ticket IDs rather than arbitrary prompt text
 - No open-source license granted at this time
 
-## BSF-3 certification targets
-The exact final PR head must pass:
-1. Dependency installation
-2. High-severity production dependency audit
-3. All unit tests, including semantic ranking and provider-boundary tests
-4. Strict TypeScript type checking
-5. Next.js production build
-6. Dynamic `/api/governed-draft` route in the production build
+## BSF-3 certification evidence
+Final PR-head validation passed on 2026-08-16:
+1. Dependency installation — PASS / 0 vulnerabilities reported
+2. High-severity production dependency audit — PASS / 0 vulnerabilities
+3. Unit tests — PASS / 16 passed, 0 failed
+4. Strict TypeScript type checking — PASS
+5. Next.js 16.3.1 production build — PASS
+6. Dynamic `/api/governed-draft` route included in production build — PASS
 
-The BSF-3 test suite is designed to prove:
+The certified suite proves:
 - semantic evidence can strengthen a relevant KB match
 - no embedding provider preserves the existing lexical path
 - embedding-provider failure degrades safely to lexical retrieval
@@ -89,7 +88,7 @@ The BSF-3 test suite is designed to prove:
 - security escalation remains deterministic under successful semantic retrieval
 - existing BSF-2 model authority boundaries remain intact
 
-## Next milestone after certification
+## Current milestone
 **BSF-4 — Stripe Support Simulator**
 
 Planned scope:
