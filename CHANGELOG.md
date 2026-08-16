@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.3.0 — 2026-08-16
+
+### Added
+- Provider-neutral AI drafting contract
+- Server-side OpenAI Responses API adapter using environment-provided credentials
+- Strict JSON-schema structured output for customer reply, KB citations, and drafting rationale
+- Grounding validator that rejects citations to knowledge not retrieved for the ticket
+- Bounded AI-provider timeout
+- Safe deterministic fallback for provider outage, malformed output, invalid grounding, or authority-boundary violations
+- `/api/governed-draft` route restricted to predefined synthetic ticket IDs
+- Dashboard workflow for generating, inspecting, and regenerating governed AI drafts
+- Provider/model/source metadata and visible safe-fallback state
+- `.env.example` with placeholder-only AI provider configuration
+- `docs/BSF-2_ARCHITECTURE.md`
+- Governed-draft tests including an explicit attempted policy-field injection
+
+### Governance
+- AI provider cannot set or alter tier, severity, confidence, escalation, escalation reasons, or approval state
+- Unexpected provider fields are rejected rather than ignored
+- Deterministic support policy remains final authority after model generation
+- High-risk and Tier 3 cases remain human-governed even when the model returns a valid draft
+- Public API is not an unrestricted model proxy
+- OpenAI Responses requests set `store: false`
+
+### Validation
+- Final BSF-2 PR-head dependency installation reported 0 vulnerabilities
+- High-severity production dependency audit passed with 0 vulnerabilities
+- 9 unit tests passed, 0 failed
+- Explicit policy-injection test passed: attempted provider `escalate: false` was rejected
+- Strict TypeScript check passed
+- Next.js 16.3.1 production build passed
+- Production build includes the dynamic `/api/governed-draft` route
+- BSF-2 certified ready for merge pending the final documentation-only CI run
+
 ## 0.2.0 — 2026-08-16
 
 ### Added

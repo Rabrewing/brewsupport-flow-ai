@@ -73,6 +73,26 @@ button { cursor: pointer; }
 .kbCard > span { color: #00c7b7; font-weight: 800; font-size: .78rem; }
 .emptyState, .draftBox { background: #111924; border: 1px solid #273447; border-radius: 12px; padding: 14px; color: #acb8c5; line-height: 1.6; font-size: .82rem; }
 .draftBox { border-left: 3px solid #00c7b7; }
+
+.aiDraftSection { background: linear-gradient(180deg, rgba(18, 34, 46, .52), rgba(16, 23, 34, 0)); }
+.aiDraftTitle { align-items: center; }
+.aiDraftTitle > div { display: grid; gap: 4px; }
+.aiDraftTitle small { display: block; }
+.aiButton { border: 1px solid #00c7b7; background: #123b39; color: #9cf0e7; border-radius: 10px; padding: 9px 12px; font-weight: 800; font-size: .76rem; white-space: nowrap; }
+.aiButton:hover { background: #174a47; }
+.aiButton:disabled { border-color: #314355; background: #1b2632; color: #718094; cursor: wait; }
+.aiEmptyState, .aiError { border: 1px dashed #39516a; border-radius: 12px; padding: 14px; color: #8fa0b2; font-size: .8rem; line-height: 1.55; }
+.aiError { border-color: #6b3340; background: #24161b; color: #e3a7b2; }
+.aiResult { display: grid; gap: 10px; }
+.aiMetaRow { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; color: #7f90a3; font-size: .7rem; }
+.providerPill { border-radius: 999px; padding: 4px 8px; font-weight: 800; }
+.provider-ai { background: #16362f; color: #7de4c0; }
+.provider-deterministic-fallback { background: #3b3214; color: #efd47c; }
+.aiDraftBox { border-left-color: #ffd700; color: #d2dae4; }
+.aiRationale { border: 1px solid #273447; border-radius: 12px; padding: 12px 14px; background: #0f1721; }
+.aiRationale strong { font-size: .76rem; }
+.aiRationale p { margin: 5px 0 0; color: #8291a2; line-height: 1.5; font-size: .73rem; }
+
 .escalationBox { margin: 16px 18px 0; background: #28161c; border: 1px solid #5e2c38; border-radius: 14px; padding: 14px; color: #f0bac3; }
 .escalationBox p, .escalationBox ul { color: #cda7ae; font-size: .8rem; line-height: 1.5; }
 .actionBar { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 18px 8px; }
@@ -105,5 +125,6 @@ footer { text-align: center; color: #667587; font-size: .72rem; padding: 22px 0 
   .analysisGrid { grid-template-columns: 1fr; }
   .vocList { grid-template-columns: 1fr; }
   .actionBar { flex-direction: column-reverse; }
-  .primaryButton, .secondaryButton { width: 100%; }
+  .primaryButton, .secondaryButton, .aiButton { width: 100%; }
+  .aiDraftTitle { align-items: stretch; flex-direction: column; }
 }

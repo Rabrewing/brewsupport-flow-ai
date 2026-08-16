@@ -10,7 +10,7 @@ The project is intentionally built with **synthetic customer data and mock billi
 
 ## Why this project exists
 
-Modern support teams should not use AI simply to generate faster replies. A trustworthy support workflow needs retrieval, confidence thresholds, escalation boundaries, auditability, and feedback loops into product and engineering.
+Modern support teams should not use AI simply to generate faster replies. A trustworthy support workflow needs retrieval, confidence thresholds, escalation boundaries, auditability, provider failure handling, and feedback loops into product and engineering.
 
 BrewSupport Flow AI demonstrates that operating model in a small, understandable codebase with an interactive support-operations dashboard.
 
@@ -18,11 +18,12 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 
 1. **Classify** the incoming ticket by category, severity, and likely support tier.
 2. **Retrieve** relevant knowledge-base context.
-3. **Draft** a grounded customer response using the retrieved context.
-4. **Score confidence** based on retrieval quality, ambiguity, risk, and ticket category.
-5. **Escalate** when confidence is low or the ticket involves disputes, security, account risk, data loss, technical failures, or other high-risk conditions.
-6. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
-7. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
+3. **Score** confidence and determine deterministic escalation requirements.
+4. **Draft** a grounded customer response from either the deterministic baseline or a governed AI provider.
+5. **Validate** provider output against a strict schema and the exact KB evidence retrieved for the case.
+6. **Escalate** when confidence is low or the ticket involves disputes, security, account risk, data loss, technical failures, or other high-risk conditions.
+7. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
+8. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
 
 ## Current architecture
 
@@ -32,38 +33,72 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 - Lightweight knowledge-base retrieval
 - Confidence and risk scoring
 - Human-in-the-loop escalation policy
-- Grounded response drafting
+- Deterministic grounded response baseline
+- Provider-neutral AI drafting contract
+- Server-side OpenAI Responses API adapter
+- Strict JSON-schema structured output
+- KB citation / grounding validation
+- Bounded AI-provider timeout
+- Safe deterministic fallback on provider or validation failure
 - Voice-of-Customer theme extraction
 - Responsive support dashboard
 - Synthetic demo tickets and knowledge articles
 - Policy-focused unit tests
 - GitHub Actions validation for production dependency audit, tests, strict type checking, and production build
 
+## Governed AI drafting
+
+BSF-2 deliberately separates **probabilistic drafting** from **deterministic authority**.
+
+The model may return only:
+
+- a customer-facing reply
+- IDs of retrieved knowledge articles used for grounding
+- a short drafting rationale
+
+The model cannot set or change support tier, severity, confidence, escalation state, escalation reasons, or approval state. Those decisions stay in deterministic application code.
+
+If the provider times out, fails, returns malformed output, or cites knowledge that was not retrieved, the workflow falls back to the deterministic grounded response while preserving the original policy decision.
+
+The public API route accepts only this repository's predefined synthetic ticket IDs. It is intentionally **not** an unrestricted OpenAI proxy.
+
+See `docs/BSF-2_ARCHITECTURE.md` for the detailed authority and safety model.
+
 ## Dashboard
 
-The BSF-1 dashboard demonstrates:
+The dashboard demonstrates:
 
 - Ticket queue and case-detail workspace
 - Tier 1 / Tier 2 / Tier 3 classification
 - Severity and risk signals
 - Retrieved KB evidence with match scores
 - Confidence visualization
-- AI-assisted grounded draft
+- Deterministic grounded baseline
+- On-demand governed AI drafting
+- Provider / model / grounding metadata
+- Visible safe-fallback state
 - Approve / escalate workflow
 - Deterministic blocking of unsafe approvals
 - Voice-of-Customer intelligence
 - Synthetic support-operations metrics
 
-The UI deliberately consumes decisions from the support engine instead of reproducing risk logic in React. **AI may recommend; deterministic policy retains authority.**
+**AI may recommend; deterministic policy retains authority.**
 
 ## Roadmap
 
-### BSF-2 — Governed AI Provider Layer
+### BSF-1 — Interactive Support Operations Dashboard — Complete
+- Support queue and case workspace
+- Classification, evidence, confidence, escalation, and VOC visualization
+- Human approval controls with deterministic policy blocking
+
+### BSF-2 — Governed AI Provider Layer — Complete
 - Provider-neutral drafting interface
-- OpenAI adapter via environment credentials only
-- Structured output validation
+- Server-side OpenAI Responses API adapter
+- Strict structured output
+- Retrieved-KB grounding validation
 - Deterministic policy remains final authority
 - Safe fallback when AI is unavailable or invalid
+- Tests proving model output cannot override escalation
 
 ### BSF-3 — Semantic RAG
 - Embeddings
@@ -90,6 +125,8 @@ This repository is intentionally public and follows strict boundaries:
 - No real Stripe IDs, payment information, or webhook secrets
 - No internal infrastructure addresses
 - Synthetic examples only
+- Provider credentials stay server-side in environment configuration
+- OpenAI Responses requests set `store: false`
 
 See `AGENTS.md` for the repository engineering constitution.
 
@@ -104,6 +141,8 @@ npm run build
 npm run dev
 ```
 
+The dashboard works without an AI key by using the deterministic fallback. To exercise provider-backed drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
+
 Then open the local Next.js application in your browser.
 
 ## Example support decision
@@ -116,6 +155,8 @@ Support tier: Tier 2
 Risk: medium
 KB retrieval: subscription entitlement guidance
 Confidence: calculated from evidence + risk
+AI authority: drafting only
+Policy authority: deterministic application logic
 Action: grounded draft + human-visible evidence
 Escalation: policy-driven
 VOC theme: subscription lifecycle
