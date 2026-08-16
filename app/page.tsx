@@ -4,9 +4,30 @@ import { useMemo, useState } from "react";
 import { demoTickets, knowledgeBase } from "../src/demoData";
 import { runSupportFlow } from "../src/supportFlow";
 
+type GovernedDraftApiResponse = {
+  ticketId: string;
+  draft: string;
+  source: "ai" | "deterministic-fallback";
+  provider: string;
+  model?: string;
+  groundedArticleIds: string[];
+  rationale: string;
+  fallbackReason?: string;
+  escalate: boolean;
+  escalationReasons: string[];
+  confidence: number;
+};
+
+type AiDraftState = {
+  loading: boolean;
+  result?: GovernedDraftApiResponse;
+  error?: string;
+};
+
 export default function HomePage() {
   const [selectedId, setSelectedId] = useState(demoTickets[0]?.id ?? "");
   const [status, setStatus] = useState<Record<string, "pending" | "approved" | "escalated">>({});
+  const [aiDrafts, setAiDrafts] = useState<Record<string, AiDraftState>>({});
 
   const selected = demoTickets.find((ticket) => ticket.id === selectedId) ?? demoTickets[0];
   const decision = useMemo(() => (selected ? runSupportFlow(selected, knowledgeBase) : null), [selected]);
@@ -33,6 +54,7 @@ export default function HomePage() {
   if (!selected || !decision) return <main className="shell">No synthetic tickets loaded.</main>;
 
   const currentStatus = status[selected.id] ?? "pending";
+  const aiDraftState = aiDrafts[selected.id];
 
   function approveTicket() {
     if (!selected || !decision || decision.escalate) return;
@@ -42,6 +64,28 @@ export default function HomePage() {
   function escalateTicket() {
     if (!selected) return;
     setStatus((current) => ({ ...current, [selected.id]: "escalated" }));
+  }
+
+  async function generateAiDraft() {
+    const ticketId = selected.id;
+    setAiDrafts((current) => ({ ...current, [ticketId]: { loading: true } }));
+
+    try {
+      const response = await fetch("/api/governed-draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketId }),
+      });
+
+      if (!response.ok) throw new Error("Draft request failed");
+      const result = (await response.json()) as GovernedDraftApiResponse;
+      setAiDrafts((current) => ({ ...current, [ticketId]: { loading: false, result } }));
+    } catch {
+      setAiDrafts((current) => ({
+        ...current,
+        [ticketId]: { loading: false, error: "The governed AI draft could not be generated." },
+      }));
+    }
   }
 
   return (
@@ -154,10 +198,48 @@ export default function HomePage() {
 
           <div className="sectionBlock">
             <div className="sectionTitle">
-              <span>AI-assisted draft</span>
-              <small>Grounded to retrieved context</small>
+              <span>Deterministic grounded baseline</span>
+              <small>Always available · no model dependency</small>
             </div>
             <div className="draftBox">{decision.draft}</div>
+          </div>
+
+          <div className="sectionBlock aiDraftSection">
+            <div className="sectionTitle aiDraftTitle">
+              <div>
+                <span>Governed AI draft</span>
+                <small>Server-side provider · structured output · policy-safe</small>
+              </div>
+              <button className="aiButton" onClick={generateAiDraft} disabled={aiDraftState?.loading}>
+                {aiDraftState?.loading ? "Generating…" : aiDraftState?.result ? "Regenerate AI draft" : "Generate AI draft"}
+              </button>
+            </div>
+
+            {!aiDraftState?.result && !aiDraftState?.error && (
+              <div className="aiEmptyState">
+                Generate a provider-backed response using only the retrieved KB evidence. If no provider is configured or validation fails, the system degrades safely to the deterministic baseline.
+              </div>
+            )}
+
+            {aiDraftState?.error && <div className="aiError">{aiDraftState.error}</div>}
+
+            {aiDraftState?.result && (
+              <div className="aiResult">
+                <div className="aiMetaRow">
+                  <span className={`providerPill provider-${aiDraftState.result.source}`}>
+                    {aiDraftState.result.source === "ai" ? "AI validated" : "Safe fallback"}
+                  </span>
+                  <span>{aiDraftState.result.provider}{aiDraftState.result.model ? ` · ${aiDraftState.result.model}` : ""}</span>
+                  <span>{aiDraftState.result.groundedArticleIds.length} KB citation(s)</span>
+                </div>
+                <div className="draftBox aiDraftBox">{aiDraftState.result.draft}</div>
+                <div className="aiRationale">
+                  <strong>Draft rationale</strong>
+                  <p>{aiDraftState.result.rationale}</p>
+                  {aiDraftState.result.fallbackReason && <p>Fallback: {aiDraftState.result.fallbackReason}</p>}
+                </div>
+              </div>
+            )}
           </div>
 
           {decision.escalate && (
