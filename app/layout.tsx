@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./billing.css";
 
 export const metadata: Metadata = {
   title: "BrewSupport Flow AI",
