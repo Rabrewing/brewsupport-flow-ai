@@ -30,8 +30,9 @@ BSF-1 remains merged and certified on `main` via PR #1.
 - Server-side OpenAI Responses API adapter
 - Strict JSON-schema structured output
 - Validation that provider citations reference only already-retrieved KB articles
+- Rejection of unexpected provider fields, including attempted policy decisions
 - Bounded provider timeout
-- Deterministic fallback on provider failure, malformed output, or invalid grounding
+- Deterministic fallback on provider failure, malformed output, invalid grounding, or authority-boundary violations
 - `/api/governed-draft` route restricted to predefined synthetic ticket IDs
 - Dashboard UI for on-demand governed AI drafting and visible fallback state
 - Safe `.env.example` with placeholders only
@@ -54,7 +55,7 @@ Deterministic application logic retains exclusive authority over:
 - escalation reasons
 - approval state
 
-Tier 3, high-risk, or low-confidence cases remain human-governed even when a valid AI draft exists.
+Tier 3, high-risk, or low-confidence cases remain human-governed even when a valid AI draft exists. Provider output that attempts to inject a policy field such as `escalate: false` is rejected and falls back to the deterministic support path.
 
 ## Public / data safety
 - No production BrewVerse code
@@ -67,7 +68,7 @@ Tier 3, high-risk, or low-confidence cases remain human-governed even when a val
 - No open-source license granted
 
 ## BSF-2 certification evidence
-Feature-branch CI passed on 2026-08-16:
+Feature-branch CI passed on 2026-08-16 before the final authority-injection test was added:
 1. Dependency installation — PASS / 0 vulnerabilities reported
 2. High-severity production dependency audit — PASS / 0 vulnerabilities
 3. Unit tests — PASS / 8 passed, 0 failed
@@ -75,15 +76,18 @@ Feature-branch CI passed on 2026-08-16:
 5. Next.js production build — PASS
 6. Dynamic `/api/governed-draft` route included in production build — PASS
 
-The test suite explicitly proves:
+The final PR-head gate additionally includes a ninth test that explicitly attempts to inject `escalate: false` through provider output. PR #2 remains unmerged until that exact head passes CI.
+
+The test suite proves:
 - valid grounded AI drafts can be accepted for low-risk cases
 - AI drafting cannot override a deterministic mandatory escalation
+- attempted provider policy-field injection is rejected
 - hallucinated / unretrieved KB citations are rejected
 - provider failures degrade safely to the deterministic support path
 - existing BSF-1 classification and escalation behavior remains intact
 
 ## Merge state
-PR #2 should merge only after the final documentation-head CI run remains green.
+PR #2 should merge only after the final documentation-and-test head CI run is green.
 
 ## Next milestone after merge
 **BSF-3 — Semantic RAG**
