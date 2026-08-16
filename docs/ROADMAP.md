@@ -13,10 +13,12 @@ Current milestone sequence:
 - **BSF-1 — Interactive Support Operations Dashboard** — merged / certified
 - **BSF-2 — Governed AI Provider Layer** — merged / certified
 - **BSF-3 — Semantic RAG** — merged / certified
-- **BSF-4 — Stripe Support Simulator** — active / certification in progress
-- **BSF-5 — Support Operations Intelligence** — planned
+- **BSF-4 — Stripe Support Simulator** — merged / certified
+- **BSF-5 — Support Operations Intelligence** — active
 
-BSF-4 extends the portfolio with realistic synthetic billing-support cases while preserving the rule that explanation and recommendation are different from authority to mutate money or account state.
+BSF-4 established realistic synthetic billing-support cases while preserving the rule that explanation and recommendation are different from authority to mutate money or account state.
+
+BSF-5 will turn individual support decisions into operational intelligence: throughput, escalation rates, category/billing trends, confidence distribution, recurring issue patterns, and actionable Voice-of-Customer summaries.
 
 ### 3. Community contribution direction
 After the core portfolio milestones are stable, make the repository contributor-friendly without weakening its public-IP boundaries or safety model.
