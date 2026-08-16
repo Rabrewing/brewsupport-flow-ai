@@ -1,11 +1,11 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-1 / Interactive Support Operations Dashboard: IMPLEMENTED ON FEATURE BRANCH**
+**BSF-1 / Interactive Support Operations Dashboard: CERTIFIED / READY TO MERGE**
 
 Branch: `bsf-1-support-dashboard`
 
-## Implemented now
+## Implemented
 - Public-portfolio engineering constitution and IP boundaries
 - TypeScript support workflow foundation
 - Typed ticket, classification, retrieval, and decision contracts
@@ -18,7 +18,7 @@ Branch: `bsf-1-support-dashboard`
 - Synthetic support tickets and KB fixtures
 - Runnable CLI demo
 - Unit tests covering billing classification, low-risk resolution, security escalation, and unsupported-query fallback
-- Next.js + React application layer
+- Next.js 16.3.1 + React 19.2.8 application layer
 - Responsive support operations dashboard
 - Ticket queue and ticket detail workspace
 - Classification / severity / support-tier visualization
@@ -28,7 +28,7 @@ Branch: `bsf-1-support-dashboard`
 - Policy-enforced approval blocking for escalated cases
 - Voice-of-Customer theme dashboard
 - Synthetic operational metrics
-- GitHub Actions CI gate for tests, strict type checking, and production build
+- GitHub Actions CI gate covering production dependency audit, tests, strict TypeScript, and production build
 
 ## Safety architecture
 The UI does not bypass the deterministic support engine. Tier 3, high-risk, or low-confidence cases remain human-governed even when a draft response exists.
@@ -39,16 +39,17 @@ This repository remains synthetic and standalone:
 - No real Stripe data or credentials
 - No proprietary Brew Agentic / BrewAssist runtime copied into this project
 
-## Validation status
-BSF-1 is now configured for automated GitHub Actions certification. The required merge gate is:
-1. Install dependencies
-2. Run unit tests
-3. Run strict TypeScript type checking
-4. Run the Next.js production build
+## Certification evidence
+The BSF-1 CI gate has demonstrated successful:
+1. Dependency installation
+2. High-severity production dependency audit
+3. Policy-focused unit tests
+4. Strict TypeScript type checking
+5. Next.js production build
 
-BSF-1 remains unmerged until that CI evidence is green.
+The dependency audit initially detected vulnerable transitive PostCSS and Sharp versions through Next.js 16.2.12. The framework was upgraded to Next.js 16.3.1 and the production audit subsequently passed.
 
-## Next milestone after certification
+## Next milestone
 **BSF-2 — Governed AI Provider Layer**
 
 Planned scope:
