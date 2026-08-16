@@ -30,9 +30,13 @@
 - Existing BSF-2 and BSF-3 model/retrieval authority boundaries remain intact
 
 ### Validation
-- BSF-4 implementation-head CI passed before documentation closeout
-- Final PR-head certification pending completion of the GitHub Actions gate
-- Certification requires dependency installation, production dependency audit, complete unit suite, strict TypeScript, and production build
+- BSF-4 merged and certified via PR #4
+- Final PR-head dependency installation reported 0 vulnerabilities
+- High-severity production dependency audit passed with 0 vulnerabilities
+- 24 unit tests passed, 0 failed
+- Strict TypeScript check passed
+- Next.js 16.3.1 production build passed
+- Production build includes the dynamic `/api/governed-draft` route
 
 ## 0.4.0 — 2026-08-16
 
