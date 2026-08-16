@@ -12,9 +12,11 @@ Current milestone sequence:
 
 - **BSF-1 — Interactive Support Operations Dashboard** — merged / certified
 - **BSF-2 — Governed AI Provider Layer** — merged / certified
-- **BSF-3 — Semantic RAG** — active
-- **BSF-4 — Stripe Support Simulator** — planned
+- **BSF-3 — Semantic RAG** — merged / certified
+- **BSF-4 — Stripe Support Simulator** — active / certification in progress
 - **BSF-5 — Support Operations Intelligence** — planned
+
+BSF-4 extends the portfolio with realistic synthetic billing-support cases while preserving the rule that explanation and recommendation are different from authority to mutate money or account state.
 
 ### 3. Community contribution direction
 After the core portfolio milestones are stable, make the repository contributor-friendly without weakening its public-IP boundaries or safety model.
@@ -38,7 +40,7 @@ Potential GitHub Action workflow:
 
 `GitHub Issue → classify → retrieve repository support context → grounded AI draft → confidence/risk gate → label / draft response / escalate`
 
-The Action should preserve the same authority principle as the reference application: model output can assist with classification, retrieval, and drafting, but deterministic policy or human review retains authority over security, billing, account access, and other consequential support actions.
+The Action should preserve the same authority principle as the reference application: model output can assist with classification, retrieval, and drafting, but deterministic policy or human review retains authority over security, billing, account access, refunds, disputes, and other consequential support actions.
 
 ### 5. Possible future GitHub App
 If the Action gains meaningful adoption, evaluate a hosted BrewSupport GitHub App for organization-level issue triage, knowledge retrieval, support intelligence, and Voice-of-Customer aggregation.

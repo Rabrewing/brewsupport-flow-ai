@@ -1,3 +1,5 @@
+import type { BillingSupportAssessment } from "./billing/types";
+
 export type TicketCategory = "billing" | "account" | "bug" | "how_to" | "security" | "feedback" | "other";
 export type Severity = "low" | "medium" | "high" | "critical";
 export type SupportTier = 1 | 2 | 3;
@@ -9,6 +11,8 @@ export interface SupportTicket {
   subject: string;
   body: string;
   customerPlan?: "starter" | "pro" | "team";
+  /** Optional synthetic BSF-4 billing fixture. Never a production Stripe/customer identifier. */
+  billingScenarioId?: string;
 }
 
 export interface KnowledgeArticle {
@@ -52,4 +56,5 @@ export interface SupportDecision {
   escalationReasons: string[];
   draft: string;
   vocThemes: string[];
+  billing?: BillingSupportAssessment;
 }

@@ -1,0 +1,28 @@
+.billingSection { background: linear-gradient(180deg, rgba(32, 29, 15, .42), rgba(16, 23, 34, 0)); }
+.billingTitle { align-items: center; }
+.billingTitle > div { display: grid; gap: 4px; }
+.authorityPill { border-radius: 999px; padding: 5px 9px; font-size: .68rem; font-weight: 850; text-transform: capitalize; white-space: nowrap; }
+.authority-automated-explanation { background: #16362f; color: #7de4c0; border: 1px solid #2a5c50; }
+.authority-human-approval-required { background: #3b3214; color: #efd47c; border: 1px solid #66582b; }
+.authority-specialist-escalation { background: #481c25; color: #ff9aa8; border: 1px solid #71303f; }
+.billingGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.billingState { background: #111924; border: 1px solid #34404e; border-radius: 12px; padding: 11px 12px; min-width: 0; }
+.billingState span { display: block; color: #8190a0; font-size: .68rem; margin-bottom: 5px; }
+.billingState strong { display: block; color: #e4e9ef; font-size: .78rem; text-transform: capitalize; overflow-wrap: anywhere; }
+.billingSummary { margin-top: 10px; border-left: 3px solid #ffd700; background: #171a18; border-radius: 10px; padding: 11px 13px; color: #c9c4a8; font-size: .78rem; line-height: 1.55; }
+.billingPolicyGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.billingPolicyCard { background: #111924; border: 1px solid #34404e; border-radius: 12px; padding: 12px; }
+.allowedTag { border-color: #2d5c51; color: #9fe8d0; background: #15312c; }
+.blockedTag { border-color: #6a3340; color: #f3aab7; background: #2a171d; }
+.billingEvidence { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.billingEvidence code { border: 1px solid #374456; border-radius: 8px; background: #0d141d; color: #9aacbd; padding: 5px 7px; font-size: .66rem; overflow-wrap: anywhere; }
+
+@media (max-width: 900px) {
+  .billingGrid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .billingTitle { align-items: stretch; flex-direction: column; }
+  .billingGrid, .billingPolicyGrid { grid-template-columns: 1fr; }
+  .authorityPill { width: fit-content; }
+}

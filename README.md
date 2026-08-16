@@ -4,28 +4,29 @@
 
 BrewSupport Flow AI demonstrates an end-to-end support workflow designed for high-volume SaaS customer operations:
 
-**Ticket → Classify → Retrieve KB Context → Hybrid RAG → Draft Response → Confidence Score → Escalate if Needed → Summarize Voice of Customer**
+**Ticket → Classify → Retrieve KB Context → Hybrid RAG → Billing Evidence → Governed Draft → Confidence / Policy → Escalate if Needed → Summarize Voice of Customer**
 
-The project is intentionally built with **synthetic customer data and mock billing/support scenarios only**. It does not contain production BrewVerse source code, customer data, credentials, or proprietary implementation details from BrewLotto, BrewAssist, Brew Agentic, BrewSearch, or Project Zahav.
+The project is intentionally built with **synthetic customer and billing data only**. It does not contain production BrewVerse source code, customer data, credentials, or proprietary implementation details from BrewLotto, BrewAssist, Brew Agentic, BrewSearch, or Project Zahav.
 
 ## Why this project exists
 
-Modern support teams should not use AI simply to generate faster replies. A trustworthy support workflow needs retrieval, confidence thresholds, escalation boundaries, auditability, provider failure handling, and feedback loops into product and engineering.
+Modern support teams should not use AI simply to generate faster replies. A trustworthy support workflow needs retrieval, confidence thresholds, escalation boundaries, billing authority boundaries, auditability, provider failure handling, and feedback loops into product and engineering.
 
-BrewSupport Flow AI demonstrates that operating model in a small, understandable codebase with an interactive support-operations dashboard.
+BrewSupport Flow AI demonstrates that operating model in a small, inspectable codebase with an interactive support-operations dashboard.
 
 ## Workflow
 
 1. **Classify** the incoming ticket by category, severity, and likely support tier.
 2. **Retrieve** deterministic lexical knowledge-base matches that remain available without an AI provider.
 3. **Enrich retrieval** with semantic embeddings when configured, then hybrid-rank lexical and semantic evidence.
-4. **Expose retrieval provenance** through combined, lexical, and semantic relevance scores.
-5. **Score** confidence and determine deterministic escalation requirements.
-6. **Draft** a grounded customer response from either the deterministic baseline or a governed AI provider.
-7. **Validate** provider output against a strict schema and the exact KB evidence retrieved for the case.
-8. **Escalate** when confidence is low or the ticket involves disputes, security, account risk, data loss, technical failures, or other high-risk conditions.
-9. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
-10. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
+4. **Attach synthetic billing evidence** for billing scenarios without connecting to a live Stripe account.
+5. **Apply deterministic authority rules** that separate safe explanation from consequential financial/account mutation.
+6. **Score** confidence and determine deterministic escalation requirements.
+7. **Draft** a grounded customer response from either the deterministic baseline or a governed AI provider.
+8. **Validate** provider output against a strict schema and the exact KB evidence retrieved for the case.
+9. **Escalate** when confidence is low or the ticket involves refunds, disputes, security, unsafe entitlement changes, data loss, or other high-risk conditions.
+10. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
+11. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
 
 ## Current architecture
 
@@ -47,10 +48,12 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 - KB citation / grounding validation
 - Bounded embedding and drafting provider timeouts
 - Safe deterministic fallback on provider or validation failure
+- Synthetic Stripe-style subscription/payment/invoice/refund/dispute fixtures
+- Deterministic billing authority classes
+- Explicit recommended and prohibited billing actions
 - Voice-of-Customer theme extraction
 - Responsive support dashboard
-- Synthetic demo tickets and knowledge articles
-- Policy-focused and retrieval-focused unit tests
+- Policy-focused, retrieval-focused, and billing-authority tests
 - GitHub Actions validation for production dependency audit, tests, strict type checking, and production build
 
 ## Governed AI drafting
@@ -63,23 +66,45 @@ The model may return only:
 - IDs of retrieved knowledge articles used for grounding
 - a short drafting rationale
 
-The model cannot set or change support tier, severity, confidence, escalation state, escalation reasons, or approval state. Those decisions stay in deterministic application code.
+The model cannot set or change support tier, severity, confidence, escalation state, escalation reasons, approval state, or billing authority. If provider output is invalid or unsupported, the workflow falls back to deterministic behavior.
 
-If the provider times out, fails, returns malformed output, or cites knowledge that was not retrieved, the workflow falls back to the deterministic grounded response while preserving the original policy decision.
-
-The public API route accepts only this repository's predefined synthetic ticket IDs. It is intentionally **not** an unrestricted OpenAI proxy.
-
-See `docs/BSF-2_ARCHITECTURE.md` for the detailed authority and safety model.
+See `docs/BSF-2_ARCHITECTURE.md`.
 
 ## Semantic RAG
 
 BSF-3 adds semantic retrieval without removing the deterministic retrieval path.
 
-When embeddings are configured, BrewSupport embeds the ticket and synthetic KB articles, calculates semantic similarity, combines semantic and lexical relevance, and exposes the evidence behind the final ranking. The default hybrid weighting favors semantic relevance while retaining deterministic lexical evidence.
+When embeddings are configured, BrewSupport combines semantic similarity with lexical relevance and exposes combined, lexical, and semantic evidence. If embeddings fail, the case falls back to lexical retrieval rather than failing.
 
-If the embedding provider is unavailable, times out, or returns malformed vectors, the case falls back to lexical retrieval rather than failing. Semantic relevance may improve the evidence selected for a case, but it cannot directly change tier, severity, risk signals, escalation state, or approval authority.
+Semantic relevance may improve evidence selection, but it cannot directly change tier, severity, risk signals, escalation state, billing authority, or approval authority.
 
-See `docs/BSF-3_ARCHITECTURE.md` for the retrieval and fallback design.
+See `docs/BSF-3_ARCHITECTURE.md`.
+
+## Stripe Support Simulator
+
+BSF-4 demonstrates billing support architecture **without a live Stripe account**.
+
+Synthetic cases include:
+
+- paid upgrade with stale application entitlement
+- failed payment / past-due subscription
+- cancellation scheduled at period end
+- reactivated subscription
+- invoice / receipt request
+- refund request
+- dispute / chargeback
+
+Every billing case receives a deterministic authority class:
+
+- **automated explanation** — verified state may be explained and approved next steps recommended
+- **human approval required** — consequential mutation requires an authorized human
+- **specialist escalation** — disputes/chargebacks are routed for specialist review
+
+The automation is explicitly prohibited from issuing refunds, reversing charges, changing payment methods, resolving disputes, altering subscriptions, changing financial records, or forcing entitlements.
+
+The AI provider may use the synthetic billing assessment as grounding context, but it does not gain financial authority.
+
+See `docs/BSF-4_ARCHITECTURE.md`.
 
 ## Dashboard
 
@@ -91,10 +116,11 @@ The dashboard demonstrates:
 - Deterministic lexical KB baseline
 - On-demand hybrid RAG evidence
 - Lexical / semantic / combined relevance scores
+- Synthetic subscription, payment, entitlement, and invoice state
+- Visible billing authority and prohibited actions
 - Confidence visualization
 - Deterministic grounded baseline
 - On-demand governed AI drafting
-- Provider / model / grounding metadata
 - Visible semantic and drafting fallback states
 - Approve / escalate workflow
 - Deterministic blocking of unsafe approvals
@@ -127,14 +153,18 @@ The dashboard demonstrates:
 - Safe lexical fallback
 - Tests for semantic ranking, malformed vectors, provider failure, and authority preservation
 
-### BSF-4 — Stripe Support Simulator
-- Synthetic refund, payment failure, cancellation, upgrade, entitlement, invoice, and dispute scenarios
+### BSF-4 — Stripe Support Simulator — Active
+- Synthetic billing/account state
+- Refund, payment failure, cancellation, reactivation, entitlement, invoice, and dispute scenarios
+- Deterministic financial-action boundaries
+- Human approval and specialist escalation
 - No real customer or Stripe data
 
 ### BSF-5 — Support Operations Intelligence
 - Throughput and escalation analytics
 - Recurring issue patterns
 - Confidence distribution
+- Billing/support category trends
 - Voice-of-Customer summaries
 
 The longer-term community and GitHub Marketplace direction is documented in `docs/ROADMAP.md`. The immediate priority remains job-readiness and a credible public engineering portfolio.
@@ -146,9 +176,11 @@ This repository is intentionally public and follows strict boundaries:
 - No production credentials or API keys
 - No real customer/support data
 - No proprietary BrewVerse source copied into this repository
+- No live Stripe connection or Stripe secret keys
 - No real Stripe IDs, payment information, or webhook secrets
+- Synthetic identifiers use obvious demo prefixes
+- Demo invoice URLs use `example.invalid`
 - No internal infrastructure addresses
-- Synthetic examples only
 - Provider credentials stay server-side in environment configuration
 - OpenAI Responses requests set `store: false`
 
@@ -165,27 +197,23 @@ npm run build
 npm run dev
 ```
 
-The dashboard works without an AI key by using deterministic lexical retrieval and deterministic drafting fallback. To exercise provider-backed semantic retrieval and drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
-
-Then open the local Next.js application in your browser.
+The dashboard works without an AI key by using deterministic lexical retrieval, synthetic billing evidence, and deterministic drafting fallback. To exercise provider-backed semantic retrieval and drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
 
 ## Example support decision
 
 ```text
-Customer: I upgraded to Pro but my account still shows Starter.
+Customer: I was charged for Pro and want a refund today.
 
 Classification: billing
 Support tier: Tier 2
-Risk: medium
-Lexical retrieval: subscription entitlement guidance
-Semantic retrieval: optional provider-backed similarity
-Hybrid evidence: lexical + semantic + combined scores
-Confidence: calculated from evidence + risk
-AI authority: drafting only
-Policy authority: deterministic application logic
-Action: grounded draft + human-visible evidence
-Escalation: policy-driven
-VOC theme: subscription lifecycle
+Synthetic payment: succeeded
+Refund state: requested
+Billing authority: human approval required
+KB retrieval: refund review guidance
+AI authority: explanation / drafting only
+Prohibited automation: issue refund, reverse charge, alter financial records
+Action: grounded response + route for authorized review
+VOC theme: refund request
 ```
 
 ## Author
