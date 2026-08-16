@@ -65,6 +65,20 @@ export class OpenAiDraftProvider implements DraftProvider {
       retrievalScore: score,
     }));
 
+    const billing = context.billing
+      ? {
+          scenarioId: context.billing.scenarioId,
+          kind: context.billing.kind,
+          authority: context.billing.authority,
+          humanReviewRequired: context.billing.humanReviewRequired,
+          recommendedActions: context.billing.recommendedActions,
+          prohibitedActions: context.billing.prohibitedActions,
+          reasons: context.billing.reasons,
+          evidence: context.billing.evidence,
+          summary: context.billing.summary,
+        }
+      : null;
+
     try {
       const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
@@ -78,18 +92,20 @@ export class OpenAiDraftProvider implements DraftProvider {
           store: false,
           max_output_tokens: 500,
           instructions:
-            "You draft concise SaaS customer-support replies. Use only the supplied retrieved knowledge as factual grounding. Never claim that a refund, account change, security fix, entitlement change, charge reversal, or other consequential action has already occurred unless the supplied knowledge explicitly proves it. Do not make policy decisions. If human review is required, acknowledge the issue and explain that specialist review is required. Cite only retrieved article IDs in groundedArticleIds. Return only the requested structured output.",
+            "You draft concise SaaS customer-support replies. Use only the supplied retrieved knowledge and supplied synthetic billing assessment as factual grounding. Never claim that a refund, account change, security fix, entitlement change, payment-method change, charge reversal, dispute resolution, subscription mutation, or other consequential action has occurred unless the supplied evidence explicitly proves it. Never promise that a prohibited billing action will occur. Do not make policy decisions or override human-review requirements. If human review is required, acknowledge the issue and explain that authorized specialist review is required. Cite only retrieved article IDs in groundedArticleIds. Return only the requested structured output.",
           input: JSON.stringify({
             ticket: {
               id: context.ticket.id,
               subject: context.ticket.subject,
               body: context.ticket.body,
               customerPlan: context.ticket.customerPlan ?? null,
+              billingScenarioId: context.ticket.billingScenarioId ?? null,
             },
             classification: context.classification,
             confidence: context.confidence,
             requiresHumanReview: context.requiresHumanReview,
             escalationReasons: context.escalationReasons,
+            syntheticBillingAssessment: billing,
             retrievedKnowledge: knowledge,
           }),
           text: {
