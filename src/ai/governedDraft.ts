@@ -41,6 +41,7 @@ export async function generateGovernedDraft(
       confidence: decision.confidence,
       requiresHumanReview: decision.escalate,
       escalationReasons: decision.escalationReasons,
+      billing: decision.billing,
     });
 
     const validated = validateProviderDraft(
