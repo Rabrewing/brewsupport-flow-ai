@@ -8,28 +8,30 @@
 - Strict JSON-schema structured output for customer reply, KB citations, and drafting rationale
 - Grounding validator that rejects citations to knowledge not retrieved for the ticket
 - Bounded AI-provider timeout
-- Safe deterministic fallback for provider outage, malformed output, or invalid grounding
+- Safe deterministic fallback for provider outage, malformed output, invalid grounding, or authority-boundary violations
 - `/api/governed-draft` route restricted to predefined synthetic ticket IDs
 - Dashboard workflow for generating, inspecting, and regenerating governed AI drafts
 - Provider/model/source metadata and visible safe-fallback state
 - `.env.example` with placeholder-only AI provider configuration
 - `docs/BSF-2_ARCHITECTURE.md`
-- Four governed-draft tests
+- Governed-draft tests including an explicit attempted policy-field injection
 
 ### Governance
 - AI provider cannot set or alter tier, severity, confidence, escalation, escalation reasons, or approval state
+- Unexpected provider fields are rejected rather than ignored
 - Deterministic support policy remains final authority after model generation
 - High-risk and Tier 3 cases remain human-governed even when the model returns a valid draft
 - Public API is not an unrestricted model proxy
 - OpenAI Responses requests set `store: false`
 
 ### Validation
-- Dependency installation reported 0 vulnerabilities
+- Initial BSF-2 feature-branch gate: dependency installation reported 0 vulnerabilities
 - High-severity production dependency audit passed with 0 vulnerabilities
-- 8 unit tests passed, 0 failed
+- 8-test pre-hardening suite passed, 0 failed
 - Strict TypeScript check passed
 - Next.js 16.3.1 production build passed
 - Production build includes the dynamic `/api/governed-draft` route
+- Final PR-head certification additionally requires the ninth authority-injection test to pass before merge
 
 ## 0.2.0 — 2026-08-16
 
