@@ -119,7 +119,7 @@ The dashboard demonstrates:
 - Safe fallback when AI is unavailable or invalid
 - Tests proving model output cannot override escalation
 
-### BSF-3 — Semantic RAG — Active
+### BSF-3 — Semantic RAG — Complete
 - Provider-neutral embedding interface
 - Server-side embeddings adapter
 - Hybrid lexical + semantic KB retrieval
