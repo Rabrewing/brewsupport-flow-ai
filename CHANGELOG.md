@@ -25,13 +25,14 @@
 - OpenAI Responses requests set `store: false`
 
 ### Validation
-- Initial BSF-2 feature-branch gate: dependency installation reported 0 vulnerabilities
+- Final BSF-2 PR-head dependency installation reported 0 vulnerabilities
 - High-severity production dependency audit passed with 0 vulnerabilities
-- 8-test pre-hardening suite passed, 0 failed
+- 9 unit tests passed, 0 failed
+- Explicit policy-injection test passed: attempted provider `escalate: false` was rejected
 - Strict TypeScript check passed
 - Next.js 16.3.1 production build passed
 - Production build includes the dynamic `/api/governed-draft` route
-- Final PR-head certification additionally requires the ninth authority-injection test to pass before merge
+- BSF-2 certified ready for merge pending the final documentation-only CI run
 
 ## 0.2.0 — 2026-08-16
 
