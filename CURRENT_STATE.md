@@ -1,11 +1,14 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-1 / Interactive Support Operations Dashboard: MERGED / CERTIFIED**
+**BSF-2 / Governed AI Provider Layer: IMPLEMENTED / CERTIFICATION GREEN ON FEATURE BRANCH**
 
-Merged to `main` via PR #1 on 2026-08-16.
+Branch: `bsf-2-governed-ai-provider`  
+PR: #2
 
-## Implemented
+BSF-1 remains merged and certified on `main` via PR #1.
+
+## Implemented through BSF-2
 - Public-portfolio engineering constitution and IP boundaries
 - TypeScript support workflow foundation
 - Typed ticket, classification, retrieval, and decision contracts
@@ -13,49 +16,82 @@ Merged to `main` via PR #1 on 2026-08-16.
 - Lightweight knowledge-base retrieval
 - Confidence scoring
 - Deterministic escalation policy
-- Grounded-response drafting from retrieved KB context
+- Deterministic grounded-response baseline
 - Voice-of-Customer theme extraction
 - Synthetic support tickets and KB fixtures
-- Runnable CLI demo
-- Unit tests covering billing classification, low-risk resolution, security escalation, and unsupported-query fallback
-- Next.js 16.3.1 + React 19.2.8 application layer
-- Responsive support operations dashboard
+- Next.js 16.3.1 + React 19.2.8 support operations dashboard
 - Ticket queue and ticket detail workspace
 - Classification / severity / support-tier visualization
 - Retrieved knowledge evidence and match scores
 - Confidence visualization and 65% auto-resolution threshold
 - Human approve / escalate controls
 - Policy-enforced approval blocking for escalated cases
-- Voice-of-Customer theme dashboard
-- Synthetic operational metrics
+- Provider-neutral AI drafting contract
+- Server-side OpenAI Responses API adapter
+- Strict JSON-schema structured output
+- Validation that provider citations reference only already-retrieved KB articles
+- Bounded provider timeout
+- Deterministic fallback on provider failure, malformed output, or invalid grounding
+- `/api/governed-draft` route restricted to predefined synthetic ticket IDs
+- Dashboard UI for on-demand governed AI drafting and visible fallback state
+- Safe `.env.example` with placeholders only
+- BSF-2 architecture documentation
 - GitHub Actions CI gate covering production dependency audit, tests, strict TypeScript, and production build
 
-## Safety architecture
-The UI does not bypass the deterministic support engine. Tier 3, high-risk, or low-confidence cases remain human-governed even when a draft response exists.
+## Authority architecture
+The AI provider is a drafting component, not the support-policy authority.
 
-This repository remains synthetic and standalone:
+The provider may return only:
+- customer-facing reply
+- retrieved knowledge article IDs used for grounding
+- drafting rationale
+
+Deterministic application logic retains exclusive authority over:
+- support tier
+- severity
+- confidence
+- escalation state
+- escalation reasons
+- approval state
+
+Tier 3, high-risk, or low-confidence cases remain human-governed even when a valid AI draft exists.
+
+## Public / data safety
 - No production BrewVerse code
 - No real customer data
 - No real Stripe data or credentials
 - No proprietary Brew Agentic / BrewAssist runtime copied into this project
+- OpenAI credentials remain server-side only
+- Public route accepts synthetic ticket IDs rather than arbitrary prompt text
+- OpenAI Responses API requests set `store: false`
+- No open-source license granted
 
-## Certification evidence
-Final BSF-1 PR-head validation passed on 2026-08-16:
-1. Dependency installation — PASS
-2. High-severity production dependency audit — PASS
-3. Policy-focused unit tests — PASS
+## BSF-2 certification evidence
+Feature-branch CI passed on 2026-08-16:
+1. Dependency installation — PASS / 0 vulnerabilities reported
+2. High-severity production dependency audit — PASS / 0 vulnerabilities
+3. Unit tests — PASS / 8 passed, 0 failed
 4. Strict TypeScript type checking — PASS
 5. Next.js production build — PASS
+6. Dynamic `/api/governed-draft` route included in production build — PASS
 
-The dependency audit initially detected vulnerable transitive PostCSS and Sharp versions through Next.js 16.2.12. The framework was upgraded to Next.js 16.3.1 and the production audit subsequently passed.
+The test suite explicitly proves:
+- valid grounded AI drafts can be accepted for low-risk cases
+- AI drafting cannot override a deterministic mandatory escalation
+- hallucinated / unretrieved KB citations are rejected
+- provider failures degrade safely to the deterministic support path
+- existing BSF-1 classification and escalation behavior remains intact
 
-## Current milestone
-**BSF-2 — Governed AI Provider Layer**
+## Merge state
+PR #2 should merge only after the final documentation-head CI run remains green.
+
+## Next milestone after merge
+**BSF-3 — Semantic RAG**
 
 Planned scope:
-1. Provider-neutral AI drafting interface
-2. OpenAI adapter using environment-provided credentials only
-3. Structured response schema validation
-4. Deterministic risk policy remains final authority
-5. AI failure / timeout fallback to existing grounded deterministic draft
-6. Tests proving AI output cannot override mandatory escalation
+1. Embedding provider abstraction
+2. Semantic retrieval over the synthetic knowledge base
+3. Hybrid lexical + semantic retrieval strategy
+4. Retrieval evidence and semantic similarity scores
+5. Deterministic confidence integration
+6. Tests for retrieval grounding and fallback behavior
