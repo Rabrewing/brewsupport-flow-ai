@@ -1,6 +1,7 @@
 import type {
   Classification,
   KnowledgeArticle,
+  RetrievalMetadata,
   RetrievalResult,
   SupportDecision,
   SupportTicket,
@@ -75,8 +76,9 @@ export function retrieveKnowledge(ticket: SupportTicket, articles: KnowledgeArti
     .map((article) => {
       const articleWords = words(`${article.title} ${article.body} ${article.tags.join(" ")}`);
       const overlap = [...queryWords].filter((word) => articleWords.has(word)).length;
-      const score = queryWords.size === 0 ? 0 : overlap / queryWords.size;
-      return { article, score: Number(score.toFixed(3)) };
+      const lexicalScore = queryWords.size === 0 ? 0 : overlap / queryWords.size;
+      const score = Number(lexicalScore.toFixed(3));
+      return { article, score, lexicalScore: score, strategy: "lexical" as const };
     })
     .filter((result) => result.score > 0)
     .sort((a, b) => b.score - a.score)
@@ -124,9 +126,12 @@ export function draftGroundedResponse(ticket: SupportTicket, retrieved: Retrieva
   return `Thanks for reaching out. Based on our support guidance, the most relevant article is “${article.title}.” ${article.body}`;
 }
 
-export function runSupportFlow(ticket: SupportTicket, articles: KnowledgeArticle[]): SupportDecision {
-  const classification = classifyTicket(ticket);
-  const retrieved = retrieveKnowledge(ticket, articles);
+export function buildSupportDecision(
+  ticket: SupportTicket,
+  classification: Classification,
+  retrieved: RetrievalResult[],
+  retrieval: RetrievalMetadata,
+): SupportDecision {
   const confidence = scoreConfidence(classification, retrieved);
   const escalationReasons = determineEscalation(classification, confidence);
   const escalate = escalationReasons.length > 0;
@@ -134,10 +139,17 @@ export function runSupportFlow(ticket: SupportTicket, articles: KnowledgeArticle
   return {
     classification,
     retrieved,
+    retrieval,
     confidence,
     escalate,
     escalationReasons,
     draft: draftGroundedResponse(ticket, retrieved, escalate),
     vocThemes: summarizeVoc(ticket, classification),
   };
+}
+
+export function runSupportFlow(ticket: SupportTicket, articles: KnowledgeArticle[]): SupportDecision {
+  const classification = classifyTicket(ticket);
+  const retrieved = retrieveKnowledge(ticket, articles);
+  return buildSupportDecision(ticket, classification, retrieved, { mode: "lexical" });
 }
