@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { demoTickets, knowledgeBase } from "../src/demoData.js";
-import { runSupportFlow } from "../src/supportFlow.js";
+import { demoTickets, knowledgeBase } from "../src/demoData";
+import { runSupportFlow } from "../src/supportFlow";
 
 export default function HomePage() {
   const [selectedId, setSelectedId] = useState(demoTickets[0]?.id ?? "");
