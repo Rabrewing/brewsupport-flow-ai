@@ -153,14 +153,15 @@ The dashboard demonstrates:
 - Safe lexical fallback
 - Tests for semantic ranking, malformed vectors, provider failure, and authority preservation
 
-### BSF-4 — Stripe Support Simulator — Active
+### BSF-4 — Stripe Support Simulator — Complete
 - Synthetic billing/account state
 - Refund, payment failure, cancellation, reactivation, entitlement, invoice, and dispute scenarios
 - Deterministic financial-action boundaries
 - Human approval and specialist escalation
+- 24-test certified suite across support, AI, RAG, and billing authority
 - No real customer or Stripe data
 
-### BSF-5 — Support Operations Intelligence
+### BSF-5 — Support Operations Intelligence — Active
 - Throughput and escalation analytics
 - Recurring issue patterns
 - Confidence distribution
