@@ -40,12 +40,12 @@ This repository remains synthetic and standalone:
 - No proprietary Brew Agentic / BrewAssist runtime copied into this project
 
 ## Certification evidence
-The BSF-1 CI gate has demonstrated successful:
-1. Dependency installation
-2. High-severity production dependency audit
-3. Policy-focused unit tests
-4. Strict TypeScript type checking
-5. Next.js production build
+Final BSF-1 PR-head validation passed on 2026-08-16:
+1. Dependency installation — PASS
+2. High-severity production dependency audit — PASS
+3. Policy-focused unit tests — PASS
+4. Strict TypeScript type checking — PASS
+5. Next.js production build — PASS
 
 The dependency audit initially detected vulnerable transitive PostCSS and Sharp versions through Next.js 16.2.12. The framework was upgraded to Next.js 16.3.1 and the production audit subsequently passed.
 
