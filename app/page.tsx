@@ -35,11 +35,12 @@ export default function HomePage() {
   const currentStatus = status[selected.id] ?? "pending";
 
   function approveTicket() {
-    if (decision.escalate) return;
+    if (!selected || !decision || decision.escalate) return;
     setStatus((current) => ({ ...current, [selected.id]: "approved" }));
   }
 
   function escalateTicket() {
+    if (!selected) return;
     setStatus((current) => ({ ...current, [selected.id]: "escalated" }));
   }
 
