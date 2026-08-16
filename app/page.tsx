@@ -16,6 +16,20 @@ type GovernedDraftApiResponse = {
   escalate: boolean;
   escalationReasons: string[];
   confidence: number;
+  retrieval: {
+    mode: "lexical" | "hybrid" | "lexical-fallback";
+    provider?: string;
+    model?: string;
+    fallbackReason?: string;
+  };
+  retrieved: Array<{
+    articleId: string;
+    title: string;
+    score: number;
+    lexicalScore: number | null;
+    semanticScore: number | null;
+    strategy: "lexical" | "semantic" | "hybrid";
+  }>;
 };
 
 type AiDraftState = {
@@ -83,7 +97,7 @@ export default function HomePage() {
     } catch {
       setAiDrafts((current) => ({
         ...current,
-        [ticketId]: { loading: false, error: "The governed AI draft could not be generated." },
+        [ticketId]: { loading: false, error: "The governed AI + RAG workflow could not be generated." },
       }));
     }
   }
@@ -176,8 +190,8 @@ export default function HomePage() {
 
           <div className="sectionBlock">
             <div className="sectionTitle">
-              <span>Retrieved knowledge</span>
-              <small>{decision.retrieved.length} grounded matches</small>
+              <span>Deterministic retrieval baseline</span>
+              <small>{decision.retrieved.length} lexical KB matches · always available</small>
             </div>
             <div className="kbList">
               {decision.retrieved.length === 0 ? (
@@ -207,17 +221,17 @@ export default function HomePage() {
           <div className="sectionBlock aiDraftSection">
             <div className="sectionTitle aiDraftTitle">
               <div>
-                <span>Governed AI draft</span>
-                <small>Server-side provider · structured output · policy-safe</small>
+                <span>Governed AI + hybrid RAG</span>
+                <small>Semantic retrieval · structured output · deterministic policy authority</small>
               </div>
               <button className="aiButton" onClick={generateAiDraft} disabled={aiDraftState?.loading}>
-                {aiDraftState?.loading ? "Generating…" : aiDraftState?.result ? "Regenerate AI draft" : "Generate AI draft"}
+                {aiDraftState?.loading ? "Running…" : aiDraftState?.result ? "Run AI + RAG again" : "Run AI + RAG"}
               </button>
             </div>
 
             {!aiDraftState?.result && !aiDraftState?.error && (
               <div className="aiEmptyState">
-                Generate a provider-backed response using only the retrieved KB evidence. If no provider is configured or validation fails, the system degrades safely to the deterministic baseline.
+                Run the provider-backed workflow to combine lexical and semantic KB evidence before drafting. If embeddings or drafting are unavailable, the system degrades safely to deterministic retrieval and response behavior.
               </div>
             )}
 
@@ -229,14 +243,37 @@ export default function HomePage() {
                   <span className={`providerPill provider-${aiDraftState.result.source}`}>
                     {aiDraftState.result.source === "ai" ? "AI validated" : "Safe fallback"}
                   </span>
-                  <span>{aiDraftState.result.provider}{aiDraftState.result.model ? ` · ${aiDraftState.result.model}` : ""}</span>
-                  <span>{aiDraftState.result.groundedArticleIds.length} KB citation(s)</span>
+                  <span>RAG: {aiDraftState.result.retrieval.mode}</span>
+                  <span>
+                    {aiDraftState.result.retrieval.provider
+                      ? `${aiDraftState.result.retrieval.provider} · ${aiDraftState.result.retrieval.model ?? "embedding model"}`
+                      : "Deterministic retrieval"}
+                  </span>
                 </div>
+
+                <div className="kbList">
+                  {aiDraftState.result.retrieved.map((item) => (
+                    <article className="kbCard" key={item.articleId}>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <p className="minor">
+                          {item.strategy} · lexical {item.lexicalScore === null ? "n/a" : `${Math.round(item.lexicalScore * 100)}%`} · semantic {item.semanticScore === null ? "n/a" : `${Math.round(item.semanticScore * 100)}%`}
+                        </p>
+                      </div>
+                      <span>{Math.round(item.score * 100)}%</span>
+                    </article>
+                  ))}
+                </div>
+
+                {aiDraftState.result.retrieval.fallbackReason && (
+                  <div className="aiError">Semantic fallback: {aiDraftState.result.retrieval.fallbackReason}</div>
+                )}
+
                 <div className="draftBox aiDraftBox">{aiDraftState.result.draft}</div>
                 <div className="aiRationale">
                   <strong>Draft rationale</strong>
                   <p>{aiDraftState.result.rationale}</p>
-                  {aiDraftState.result.fallbackReason && <p>Fallback: {aiDraftState.result.fallbackReason}</p>}
+                  {aiDraftState.result.fallbackReason && <p>Draft fallback: {aiDraftState.result.fallbackReason}</p>}
                 </div>
               </div>
             )}
@@ -295,7 +332,7 @@ export default function HomePage() {
           <div className="principleCard">
             <span className="kicker">OPERATING PRINCIPLE</span>
             <strong>AI may recommend. Policy retains authority.</strong>
-            <p>Security, fraud, disputes, ambiguous answers, and Tier 3 cases remain human-governed.</p>
+            <p>Semantic retrieval can improve context, but security, fraud, disputes, ambiguous answers, and Tier 3 cases remain human-governed.</p>
           </div>
         </aside>
       </section>

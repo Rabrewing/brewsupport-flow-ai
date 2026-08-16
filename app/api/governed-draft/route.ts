@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { generateGovernedDraft } from "../../../src/ai/governedDraft";
 import { OpenAiDraftProvider } from "../../../src/ai/openAiDraftProvider";
 import { demoTickets, knowledgeBase } from "../../../src/demoData";
-import { runSupportFlow } from "../../../src/supportFlow";
+import { runHybridSupportFlow } from "../../../src/retrieval/hybridSupportFlow";
+import { OpenAiEmbeddingProvider } from "../../../src/retrieval/openAiEmbeddingProvider";
 
 export const runtime = "nodejs";
 
-function resolveTimeoutMs(): number {
-  const parsed = Number(process.env.AI_DRAFT_TIMEOUT_MS ?? "8000");
-  if (!Number.isFinite(parsed)) return 8000;
+function resolveTimeoutMs(value: string | undefined, fallback: number): number {
+  const parsed = Number(value ?? String(fallback));
+  if (!Number.isFinite(parsed)) return fallback;
   return Math.max(1000, Math.min(15000, Math.round(parsed)));
 }
 
@@ -36,21 +37,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unknown synthetic ticket" }, { status: 404 });
   }
 
-  const decision = runSupportFlow(ticket, knowledgeBase);
   const apiKey = process.env.OPENAI_API_KEY?.trim();
-  const provider = apiKey
-    ? new OpenAiDraftProvider({
+  const embeddingProvider = apiKey
+    ? new OpenAiEmbeddingProvider({
         apiKey,
-        model: process.env.OPENAI_MODEL?.trim() || "gpt-5.6",
-        timeoutMs: resolveTimeoutMs(),
+        model: process.env.OPENAI_EMBEDDING_MODEL?.trim() || "text-embedding-3-small",
+        timeoutMs: resolveTimeoutMs(process.env.AI_EMBEDDING_TIMEOUT_MS, 8000),
       })
     : undefined;
 
-  const governedDraft = await generateGovernedDraft(ticket, decision, provider);
+  const decision = await runHybridSupportFlow(ticket, knowledgeBase, embeddingProvider);
+
+  const draftProvider = apiKey
+    ? new OpenAiDraftProvider({
+        apiKey,
+        model: process.env.OPENAI_MODEL?.trim() || "gpt-5.6",
+        timeoutMs: resolveTimeoutMs(process.env.AI_DRAFT_TIMEOUT_MS, 8000),
+      })
+    : undefined;
+
+  const governedDraft = await generateGovernedDraft(ticket, decision, draftProvider);
 
   return NextResponse.json(
     {
       ticketId: ticket.id,
+      retrieval: decision.retrieval,
+      retrieved: decision.retrieved.map((result) => ({
+        articleId: result.article.id,
+        title: result.article.title,
+        score: result.score,
+        lexicalScore: result.lexicalScore ?? null,
+        semanticScore: result.semanticScore ?? null,
+        strategy: result.strategy ?? "lexical",
+      })),
       ...governedDraft,
     },
     {

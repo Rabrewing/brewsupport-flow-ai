@@ -1,6 +1,8 @@
 export type TicketCategory = "billing" | "account" | "bug" | "how_to" | "security" | "feedback" | "other";
 export type Severity = "low" | "medium" | "high" | "critical";
 export type SupportTier = 1 | 2 | 3;
+export type RetrievalStrategy = "lexical" | "semantic" | "hybrid";
+export type RetrievalMode = "lexical" | "hybrid" | "lexical-fallback";
 
 export interface SupportTicket {
   id: string;
@@ -25,12 +27,26 @@ export interface Classification {
 
 export interface RetrievalResult {
   article: KnowledgeArticle;
+  /** Final score used for ranking and downstream confidence. */
   score: number;
+  /** Exact-token overlap score from the deterministic lexical retriever. */
+  lexicalScore?: number;
+  /** Cosine similarity score supplied by the semantic retriever. */
+  semanticScore?: number;
+  strategy?: RetrievalStrategy;
+}
+
+export interface RetrievalMetadata {
+  mode: RetrievalMode;
+  provider?: string;
+  model?: string;
+  fallbackReason?: string;
 }
 
 export interface SupportDecision {
   classification: Classification;
   retrieved: RetrievalResult[];
+  retrieval: RetrievalMetadata;
   confidence: number;
   escalate: boolean;
   escalationReasons: string[];

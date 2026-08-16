@@ -4,7 +4,7 @@
 
 BrewSupport Flow AI demonstrates an end-to-end support workflow designed for high-volume SaaS customer operations:
 
-**Ticket → Classify → Retrieve KB Context → Draft Response → Confidence Score → Escalate if Needed → Summarize Voice of Customer**
+**Ticket → Classify → Retrieve KB Context → Hybrid RAG → Draft Response → Confidence Score → Escalate if Needed → Summarize Voice of Customer**
 
 The project is intentionally built with **synthetic customer data and mock billing/support scenarios only**. It does not contain production BrewVerse source code, customer data, credentials, or proprietary implementation details from BrewLotto, BrewAssist, Brew Agentic, BrewSearch, or Project Zahav.
 
@@ -17,20 +17,27 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 ## Workflow
 
 1. **Classify** the incoming ticket by category, severity, and likely support tier.
-2. **Retrieve** relevant knowledge-base context.
-3. **Score** confidence and determine deterministic escalation requirements.
-4. **Draft** a grounded customer response from either the deterministic baseline or a governed AI provider.
-5. **Validate** provider output against a strict schema and the exact KB evidence retrieved for the case.
-6. **Escalate** when confidence is low or the ticket involves disputes, security, account risk, data loss, technical failures, or other high-risk conditions.
-7. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
-8. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
+2. **Retrieve** deterministic lexical knowledge-base matches that remain available without an AI provider.
+3. **Enrich retrieval** with semantic embeddings when configured, then hybrid-rank lexical and semantic evidence.
+4. **Expose retrieval provenance** through combined, lexical, and semantic relevance scores.
+5. **Score** confidence and determine deterministic escalation requirements.
+6. **Draft** a grounded customer response from either the deterministic baseline or a governed AI provider.
+7. **Validate** provider output against a strict schema and the exact KB evidence retrieved for the case.
+8. **Escalate** when confidence is low or the ticket involves disputes, security, account risk, data loss, technical failures, or other high-risk conditions.
+9. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
+10. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
 
 ## Current architecture
 
 - Next.js 16.3.1 + React 19.2.8
 - TypeScript
 - Deterministic ticket classifier
-- Lightweight knowledge-base retrieval
+- Deterministic lexical KB retrieval baseline
+- Provider-neutral embedding interface
+- Server-side OpenAI embeddings adapter
+- Hybrid lexical + semantic knowledge retrieval
+- Retrieval provenance with lexical / semantic / combined scores
+- Lexical fallback when semantic retrieval is unavailable or invalid
 - Confidence and risk scoring
 - Human-in-the-loop escalation policy
 - Deterministic grounded response baseline
@@ -38,12 +45,12 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 - Server-side OpenAI Responses API adapter
 - Strict JSON-schema structured output
 - KB citation / grounding validation
-- Bounded AI-provider timeout
+- Bounded embedding and drafting provider timeouts
 - Safe deterministic fallback on provider or validation failure
 - Voice-of-Customer theme extraction
 - Responsive support dashboard
 - Synthetic demo tickets and knowledge articles
-- Policy-focused unit tests
+- Policy-focused and retrieval-focused unit tests
 - GitHub Actions validation for production dependency audit, tests, strict type checking, and production build
 
 ## Governed AI drafting
@@ -64,6 +71,16 @@ The public API route accepts only this repository's predefined synthetic ticket 
 
 See `docs/BSF-2_ARCHITECTURE.md` for the detailed authority and safety model.
 
+## Semantic RAG
+
+BSF-3 adds semantic retrieval without removing the deterministic retrieval path.
+
+When embeddings are configured, BrewSupport embeds the ticket and synthetic KB articles, calculates semantic similarity, combines semantic and lexical relevance, and exposes the evidence behind the final ranking. The default hybrid weighting favors semantic relevance while retaining deterministic lexical evidence.
+
+If the embedding provider is unavailable, times out, or returns malformed vectors, the case falls back to lexical retrieval rather than failing. Semantic relevance may improve the evidence selected for a case, but it cannot directly change tier, severity, risk signals, escalation state, or approval authority.
+
+See `docs/BSF-3_ARCHITECTURE.md` for the retrieval and fallback design.
+
 ## Dashboard
 
 The dashboard demonstrates:
@@ -71,12 +88,14 @@ The dashboard demonstrates:
 - Ticket queue and case-detail workspace
 - Tier 1 / Tier 2 / Tier 3 classification
 - Severity and risk signals
-- Retrieved KB evidence with match scores
+- Deterministic lexical KB baseline
+- On-demand hybrid RAG evidence
+- Lexical / semantic / combined relevance scores
 - Confidence visualization
 - Deterministic grounded baseline
 - On-demand governed AI drafting
 - Provider / model / grounding metadata
-- Visible safe-fallback state
+- Visible semantic and drafting fallback states
 - Approve / escalate workflow
 - Deterministic blocking of unsafe approvals
 - Voice-of-Customer intelligence
@@ -100,10 +119,13 @@ The dashboard demonstrates:
 - Safe fallback when AI is unavailable or invalid
 - Tests proving model output cannot override escalation
 
-### BSF-3 — Semantic RAG
-- Embeddings
-- Semantic KB retrieval
-- Retrieval confidence and grounding evidence
+### BSF-3 — Semantic RAG — Active
+- Provider-neutral embedding interface
+- Server-side embeddings adapter
+- Hybrid lexical + semantic KB retrieval
+- Retrieval provenance and semantic similarity evidence
+- Safe lexical fallback
+- Tests for semantic ranking, malformed vectors, provider failure, and authority preservation
 
 ### BSF-4 — Stripe Support Simulator
 - Synthetic refund, payment failure, cancellation, upgrade, entitlement, invoice, and dispute scenarios
@@ -114,6 +136,8 @@ The dashboard demonstrates:
 - Recurring issue patterns
 - Confidence distribution
 - Voice-of-Customer summaries
+
+The longer-term community and GitHub Marketplace direction is documented in `docs/ROADMAP.md`. The immediate priority remains job-readiness and a credible public engineering portfolio.
 
 ## Public portfolio safety
 
@@ -141,7 +165,7 @@ npm run build
 npm run dev
 ```
 
-The dashboard works without an AI key by using the deterministic fallback. To exercise provider-backed drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
+The dashboard works without an AI key by using deterministic lexical retrieval and deterministic drafting fallback. To exercise provider-backed semantic retrieval and drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
 
 Then open the local Next.js application in your browser.
 
@@ -153,7 +177,9 @@ Customer: I upgraded to Pro but my account still shows Starter.
 Classification: billing
 Support tier: Tier 2
 Risk: medium
-KB retrieval: subscription entitlement guidance
+Lexical retrieval: subscription entitlement guidance
+Semantic retrieval: optional provider-backed similarity
+Hybrid evidence: lexical + semantic + combined scores
 Confidence: calculated from evidence + risk
 AI authority: drafting only
 Policy authority: deterministic application logic

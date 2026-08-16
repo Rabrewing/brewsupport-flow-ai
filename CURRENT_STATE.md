@@ -1,59 +1,65 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-2 / Governed AI Provider Layer: MERGED / CERTIFIED**
+**BSF-3 / Semantic RAG: IMPLEMENTED / CERTIFICATION IN PROGRESS**
 
-Merged to `main` via PR #2 on 2026-08-16.  
-BSF-1 remains merged and certified via PR #1.
+Branch: `bsf-3-semantic-rag`  
+PR: #3
 
-## Implemented through BSF-2
+BSF-1 and BSF-2 remain merged and certified on `main`.
+
+## Implemented through BSF-3
 - Public-portfolio engineering constitution and IP boundaries
 - TypeScript support workflow foundation
-- Typed ticket, classification, retrieval, and decision contracts
 - Deterministic ticket classification
-- Lightweight knowledge-base retrieval
-- Confidence scoring
-- Deterministic escalation policy
+- Deterministic lexical knowledge retrieval baseline
+- Confidence scoring and deterministic escalation policy
 - Deterministic grounded-response baseline
 - Voice-of-Customer theme extraction
-- Synthetic support tickets and KB fixtures
 - Next.js 16.3.1 + React 19.2.8 support operations dashboard
-- Ticket queue and ticket detail workspace
-- Classification / severity / support-tier visualization
-- Retrieved knowledge evidence and match scores
-- Confidence visualization and 65% auto-resolution threshold
-- Human approve / escalate controls
-- Policy-enforced approval blocking for escalated cases
+- Human approve / escalate controls with policy-enforced blocking
 - Provider-neutral AI drafting contract
 - Server-side OpenAI Responses API adapter
-- Strict JSON-schema structured output
-- Validation that provider citations reference only already-retrieved KB articles
-- Rejection of unexpected provider fields, including attempted policy decisions
-- Bounded provider timeout
-- Deterministic fallback on provider failure, malformed output, invalid grounding, or authority-boundary violations
-- `/api/governed-draft` route restricted to predefined synthetic ticket IDs
-- Dashboard UI for on-demand governed AI drafting and visible fallback state
-- Safe `.env.example` with placeholders only
-- BSF-2 architecture documentation
+- Strict structured-output and KB-grounding validation
+- Rejection of provider policy-field injection
+- Bounded drafting timeout and deterministic fallback
+- Provider-neutral embedding contract
+- Server-side OpenAI embeddings adapter
+- Default semantic model configuration: `text-embedding-3-small`
+- Hybrid lexical + semantic retrieval
+- Retrieval provenance: lexical, semantic, and combined scores
+- Semantic retrieval integrated into the governed drafting route
+- Safe lexical fallback on embedding outage, timeout, malformed vectors, invalid dimensions, or other semantic failures
+- Dashboard visualization for RAG mode, provider/model, retrieval strategy, and score breakdown
+- Retrieval-focused tests plus existing BSF-1 / BSF-2 safety tests
 - GitHub Actions CI gate covering production dependency audit, tests, strict TypeScript, and production build
+- Durable community / GitHub Marketplace direction in `docs/ROADMAP.md`
+
+## Retrieval architecture
+The deterministic lexical retriever is never removed. When an embedding provider is configured, semantic similarity is combined with lexical evidence using a hybrid ranker. The final retrieval score can influence the retrieval component of confidence, but semantic retrieval does not control policy.
+
+Default hybrid weights:
+- lexical: 35%
+- semantic: 65%
+
+Every hybrid result can expose:
+- combined score
+- lexical score
+- semantic score
+- retrieval strategy (`lexical`, `semantic`, or `hybrid`)
 
 ## Authority architecture
-The AI provider is a drafting component, not the support-policy authority.
-
-The provider may return only:
-- customer-facing reply
-- retrieved knowledge article IDs used for grounding
-- drafting rationale
+AI generation and semantic retrieval are advisory/evidence components, not policy authorities.
 
 Deterministic application logic retains exclusive authority over:
 - support tier
 - severity
-- confidence
+- risk signals
 - escalation state
 - escalation reasons
 - approval state
 
-Tier 3, high-risk, or low-confidence cases remain human-governed even when a valid AI draft exists. Provider output that attempts to inject a policy field such as `escalate: false` is rejected and falls back to the deterministic support path.
+Tier 3, high-risk, and low-confidence cases remain human-governed regardless of semantic relevance or model output.
 
 ## Public / data safety
 - No production BrewVerse code
@@ -62,35 +68,37 @@ Tier 3, high-risk, or low-confidence cases remain human-governed even when a val
 - No proprietary Brew Agentic / BrewAssist runtime copied into this project
 - OpenAI credentials remain server-side only
 - Public route accepts synthetic ticket IDs rather than arbitrary prompt text
-- OpenAI Responses API requests set `store: false`
-- No open-source license granted
+- No open-source license granted at this time
 
-## BSF-2 certification evidence
-Final PR-head validation passed on 2026-08-16:
-1. Dependency installation — PASS / 0 vulnerabilities reported
-2. High-severity production dependency audit — PASS / 0 vulnerabilities
-3. Unit tests — PASS / 9 passed, 0 failed
-4. Strict TypeScript type checking — PASS
-5. Next.js production build — PASS
-6. Dynamic `/api/governed-draft` route included in production build — PASS
+## BSF-3 certification targets
+The exact final PR head must pass:
+1. Dependency installation
+2. High-severity production dependency audit
+3. All unit tests, including semantic ranking and provider-boundary tests
+4. Strict TypeScript type checking
+5. Next.js production build
+6. Dynamic `/api/governed-draft` route in the production build
 
-The final documentation-only PR head also passed the complete CI gate before merge.
+The BSF-3 test suite is designed to prove:
+- semantic evidence can strengthen a relevant KB match
+- no embedding provider preserves the existing lexical path
+- embedding-provider failure degrades safely to lexical retrieval
+- malformed vectors degrade safely to lexical retrieval
+- OpenAI embedding responses are ordered by provider index
+- response-count mismatch is rejected
+- security escalation remains deterministic under successful semantic retrieval
+- existing BSF-2 model authority boundaries remain intact
 
-The certified test suite proves:
-- valid grounded AI drafts can be accepted for low-risk cases
-- AI drafting cannot override a deterministic mandatory escalation
-- attempted provider policy-field injection is rejected
-- hallucinated / unretrieved KB citations are rejected
-- provider failures degrade safely to the deterministic support path
-- existing BSF-1 classification and escalation behavior remains intact
-
-## Current milestone
-**BSF-3 — Semantic RAG**
+## Next milestone after certification
+**BSF-4 — Stripe Support Simulator**
 
 Planned scope:
-1. Embedding provider abstraction
-2. Semantic retrieval over the synthetic knowledge base
-3. Hybrid lexical + semantic retrieval strategy
-4. Retrieval evidence and semantic similarity scores
-5. Deterministic confidence integration
-6. Tests for retrieval grounding and fallback behavior
+1. Synthetic refund-request scenarios
+2. Failed-payment and invoice scenarios
+3. Cancellation / reactivation scenarios
+4. Upgrade / entitlement mismatch scenarios
+5. Dispute / chargeback scenarios that force human review
+6. No real Stripe credentials, IDs, or customer/payment data
+
+## Longer-term direction
+Job-readiness remains the immediate priority. After the core portfolio milestones, the planned community path is contributor readiness, then extraction of a dedicated GitHub Action for possible Marketplace publication, with a GitHub App considered only if real adoption justifies it. See `docs/ROADMAP.md`.
