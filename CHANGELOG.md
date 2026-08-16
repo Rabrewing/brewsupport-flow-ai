@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.5.0 — 2026-08-16
+
+### Added
+- Synthetic Stripe-style billing scenario contracts and fixtures
+- Upgrade / entitlement mismatch scenario
+- Failed-payment / past-due scenario
+- Period-end cancellation scenario
+- Reactivation scenario
+- Invoice / receipt scenario
+- Refund-request scenario
+- Dispute / chargeback scenario
+- Deterministic billing authority classes: automated explanation, human approval required, specialist escalation
+- Explicit recommended billing-support actions and prohibited financial/account mutations
+- Billing evidence passed into governed AI drafting as context only
+- Dashboard billing-state, authority, evidence, allowed-action, and prohibited-action visualization
+- Billing-specific UI styling
+- `docs/BSF-4_ARCHITECTURE.md`
+- Billing authority test suite
+
+### Governance / Safety
+- No live Stripe account is required or connected
+- No real Stripe/customer/payment IDs or credentials
+- No production BrewLotto billing code copied into the public repository
+- AI may explain synthetic billing evidence but cannot issue refunds, reverse charges, change payment methods, resolve disputes, alter subscriptions, alter financial records, or force entitlements
+- Refund requests force authorized human review
+- Disputes and chargebacks force specialist escalation
+- Subscription/application entitlement mismatch requires review before forced access changes
+- Existing BSF-2 and BSF-3 model/retrieval authority boundaries remain intact
+
+### Validation
+- BSF-4 implementation-head CI passed before documentation closeout
+- Final PR-head certification pending completion of the GitHub Actions gate
+- Certification requires dependency installation, production dependency audit, complete unit suite, strict TypeScript, and production build
+
 ## 0.4.0 — 2026-08-16
 
 ### Added
@@ -25,14 +59,11 @@
 - OpenAI credentials remain server-side only
 
 ### Validation
-- Final BSF-3 PR-head dependency installation reported 0 vulnerabilities
-- High-severity production dependency audit passed with 0 vulnerabilities
-- 16 unit tests passed, 0 failed
-- Semantic ranking, lexical fallback, malformed-vector fallback, provider-boundary, and security-authority tests passed
-- Strict TypeScript check passed
-- Next.js 16.3.1 production build passed
-- Production build includes the dynamic `/api/governed-draft` route
 - BSF-3 merged and certified via PR #3
+- Final certification reported 0 production dependency vulnerabilities
+- 16 unit tests passed, 0 failed
+- Strict TypeScript passed
+- Next.js 16.3.1 production build passed
 
 ## 0.3.0 — 2026-08-16
 
