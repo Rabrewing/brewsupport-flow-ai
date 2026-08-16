@@ -32,7 +32,8 @@
 - Strict TypeScript check passed
 - Next.js 16.3.1 production build passed
 - Production build includes the dynamic `/api/governed-draft` route
-- BSF-2 certified ready for merge pending the final documentation-only CI run
+- Final documentation-only PR head passed the complete CI gate
+- BSF-2 merged to `main` via PR #2
 
 ## 0.2.0 — 2026-08-16
 
@@ -61,7 +62,7 @@
 - Policy-focused tests passed
 - Strict TypeScript check passed
 - Next.js production build passed
-- BSF-1 certified ready for merge
+- BSF-1 merged to `main` via PR #1 after certification
 
 ## 0.1.0 — 2026-08-16
 
