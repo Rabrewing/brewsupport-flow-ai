@@ -1,12 +1,10 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-2 / Governed AI Provider Layer: CERTIFIED / READY TO MERGE**
+**BSF-2 / Governed AI Provider Layer: MERGED / CERTIFIED**
 
-Branch: `bsf-2-governed-ai-provider`  
-PR: #2
-
-BSF-1 remains merged and certified on `main` via PR #1.
+Merged to `main` via PR #2 on 2026-08-16.  
+BSF-1 remains merged and certified via PR #1.
 
 ## Implemented through BSF-2
 - Public-portfolio engineering constitution and IP boundaries
@@ -76,6 +74,8 @@ Final PR-head validation passed on 2026-08-16:
 5. Next.js production build — PASS
 6. Dynamic `/api/governed-draft` route included in production build — PASS
 
+The final documentation-only PR head also passed the complete CI gate before merge.
+
 The certified test suite proves:
 - valid grounded AI drafts can be accepted for low-risk cases
 - AI drafting cannot override a deterministic mandatory escalation
@@ -84,10 +84,7 @@ The certified test suite proves:
 - provider failures degrade safely to the deterministic support path
 - existing BSF-1 classification and escalation behavior remains intact
 
-## Merge state
-PR #2 is certification-ready. The final documentation-only head must retain the same green CI gate before merge.
-
-## Next milestone after merge
+## Current milestone
 **BSF-3 — Semantic RAG**
 
 Planned scope:
