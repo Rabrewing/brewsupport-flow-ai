@@ -1,12 +1,11 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-4 / Stripe Support Simulator: IMPLEMENTED / CERTIFICATION IN PROGRESS**
+**BSF-4 / Stripe Support Simulator: MERGED / CERTIFIED**
 
-Branch: `bsf-4-stripe-support-simulator`  
-PR: #4
+Merged to `main` via PR #4 on 2026-08-16.
 
-BSF-1, BSF-2, and BSF-3 remain merged and certified on `main`.
+BSF-1, BSF-2, BSF-3, and BSF-4 are merged and certified on `main`.
 
 ## Implemented through BSF-4
 - Public-portfolio engineering constitution and IP boundaries
@@ -83,16 +82,16 @@ Deterministic application logic retains authority over:
 - Public route accepts synthetic ticket IDs rather than arbitrary prompt text
 - No open-source license granted at this time
 
-## BSF-4 certification targets
-The exact final PR head must pass:
-1. Dependency installation
-2. High-severity production dependency audit
-3. Complete unit suite including billing authority tests
-4. Strict TypeScript type checking
-5. Next.js production build
-6. Dynamic `/api/governed-draft` route in the production build
+## BSF-4 certification evidence
+Final PR-head validation passed on 2026-08-16:
+1. Dependency installation — PASS / 0 vulnerabilities reported
+2. High-severity production dependency audit — PASS / 0 vulnerabilities
+3. Unit tests — PASS / 24 passed, 0 failed
+4. Strict TypeScript type checking — PASS
+5. Next.js 16.3.1 production build — PASS
+6. Dynamic `/api/governed-draft` route included in production build — PASS
 
-The BSF-4 suite is designed to prove:
+The certified suite proves:
 - entitlement mismatch cannot force access without review
 - failed payments can be explained without payment-method mutation
 - period-end cancellation state can be explained safely
@@ -102,7 +101,7 @@ The BSF-4 suite is designed to prove:
 - billing evidence reaches governed AI drafting without changing deterministic authority
 - all BSF-1/2/3 safety and retrieval boundaries remain intact
 
-## Next milestone after certification
+## Current milestone
 **BSF-5 — Support Operations Intelligence**
 
 Planned scope:
