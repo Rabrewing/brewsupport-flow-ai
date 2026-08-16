@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.4.0 — 2026-08-16
+
+### Added
+- Provider-neutral embedding contract
+- Server-side OpenAI embeddings adapter
+- Configurable embedding model and bounded embedding timeout
+- Hybrid lexical + semantic knowledge retrieval
+- Cosine-similarity semantic scoring
+- Retrieval provenance with lexical, semantic, and combined scores
+- Retrieval strategy labels (`lexical`, `semantic`, `hybrid`)
+- Semantic retrieval integrated into the governed drafting route
+- Dashboard evidence for RAG mode, provider/model, retrieval strategy, and score breakdown
+- `docs/BSF-3_ARCHITECTURE.md`
+- `docs/ROADMAP.md` recording job-first, community, GitHub Action, Marketplace, and possible GitHub App direction
+- Semantic retrieval and embedding-adapter tests
+
+### Governance / Safety
+- Deterministic lexical retrieval remains available without an embedding provider
+- Semantic provider outage or malformed vectors degrade safely to lexical retrieval
+- Semantic evidence cannot set or override tier, severity, risk signals, escalation, escalation reasons, or approval state
+- Security / Tier 3 cases remain human-governed regardless of semantic relevance
+- Public provider-backed route remains restricted to predefined synthetic ticket IDs
+- OpenAI credentials remain server-side only
+
+### Validation
+- BSF-3 final PR-head certification pending completion of the GitHub Actions gate
+- Certification requires dependency installation, production dependency audit, complete unit suite, strict TypeScript, and production build
+
 ## 0.3.0 — 2026-08-16
 
 ### Added
@@ -32,8 +60,7 @@
 - Strict TypeScript check passed
 - Next.js 16.3.1 production build passed
 - Production build includes the dynamic `/api/governed-draft` route
-- Final documentation-only PR head passed the complete CI gate
-- BSF-2 merged to `main` via PR #2
+- BSF-2 merged and certified via PR #2
 
 ## 0.2.0 — 2026-08-16
 
@@ -62,7 +89,7 @@
 - Policy-focused tests passed
 - Strict TypeScript check passed
 - Next.js production build passed
-- BSF-1 merged to `main` via PR #1 after certification
+- BSF-1 merged and certified via PR #1
 
 ## 0.1.0 — 2026-08-16
 
