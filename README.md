@@ -26,7 +26,7 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 
 ## Current architecture
 
-- Next.js 15 + React 19
+- Next.js 16.3.1 + React 19.2.8
 - TypeScript
 - Deterministic ticket classifier
 - Lightweight knowledge-base retrieval
@@ -36,7 +36,8 @@ BrewSupport Flow AI demonstrates that operating model in a small, understandable
 - Voice-of-Customer theme extraction
 - Responsive support dashboard
 - Synthetic demo tickets and knowledge articles
-- Unit tests
+- Policy-focused unit tests
+- GitHub Actions validation for production dependency audit, tests, strict type checking, and production build
 
 ## Dashboard
 
@@ -96,8 +97,10 @@ See `AGENTS.md` for the repository engineering constitution.
 
 ```bash
 npm install
+npm audit --omit=dev --audit-level=high
 npm test
 npm run typecheck
+npm run build
 npm run dev
 ```
 
