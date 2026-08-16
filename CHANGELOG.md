@@ -25,8 +25,14 @@
 - OpenAI credentials remain server-side only
 
 ### Validation
-- BSF-3 final PR-head certification pending completion of the GitHub Actions gate
-- Certification requires dependency installation, production dependency audit, complete unit suite, strict TypeScript, and production build
+- Final BSF-3 PR-head dependency installation reported 0 vulnerabilities
+- High-severity production dependency audit passed with 0 vulnerabilities
+- 16 unit tests passed, 0 failed
+- Semantic ranking, lexical fallback, malformed-vector fallback, provider-boundary, and security-authority tests passed
+- Strict TypeScript check passed
+- Next.js 16.3.1 production build passed
+- Production build includes the dynamic `/api/governed-draft` route
+- BSF-3 merged and certified via PR #3
 
 ## 0.3.0 — 2026-08-16
 
