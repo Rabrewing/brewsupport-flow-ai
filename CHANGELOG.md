@@ -13,6 +13,7 @@
 - Deterministic policy block preventing approval of mandatory escalations
 - Voice-of-Customer theme summary
 - Synthetic support metrics for portfolio demonstration
+- GitHub Actions validation gate covering tests, strict type checking, and production build
 
 ### Architecture
 - Existing deterministic support engine remains the authority beneath the UI
@@ -21,7 +22,7 @@
 
 ### Validation
 - Repository changes are staged on `bsf-1-support-dashboard`
-- Local/CI install, typecheck, test, and build certification remain required before merge
+- BSF-1 remains unmerged until the GitHub Actions validation gate passes
 
 ## 0.1.0 — 2026-08-16
 
