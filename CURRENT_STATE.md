@@ -1,9 +1,9 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-1 / Interactive Support Operations Dashboard: CERTIFIED / READY TO MERGE**
+**BSF-1 / Interactive Support Operations Dashboard: MERGED / CERTIFIED**
 
-Branch: `bsf-1-support-dashboard`
+Merged to `main` via PR #1 on 2026-08-16.
 
 ## Implemented
 - Public-portfolio engineering constitution and IP boundaries
@@ -49,7 +49,7 @@ Final BSF-1 PR-head validation passed on 2026-08-16:
 
 The dependency audit initially detected vulnerable transitive PostCSS and Sharp versions through Next.js 16.2.12. The framework was upgraded to Next.js 16.3.1 and the production audit subsequently passed.
 
-## Next milestone
+## Current milestone
 **BSF-2 — Governed AI Provider Layer**
 
 Planned scope:
