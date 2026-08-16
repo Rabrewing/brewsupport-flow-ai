@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { BillingSupportAssessment } from "../src/billing/types";
+import { runLocalSupportFlowWithBilling } from "../src/billing/runBillingSupportFlow";
+import { findSyntheticBillingScenario } from "../src/billing/syntheticBillingData";
 import { demoTickets, knowledgeBase } from "../src/demoData";
-import { runSupportFlow } from "../src/supportFlow";
 
 type GovernedDraftApiResponse = {
   ticketId: string;
@@ -30,6 +32,7 @@ type GovernedDraftApiResponse = {
     semanticScore: number | null;
     strategy: "lexical" | "semantic" | "hybrid";
   }>;
+  billing: BillingSupportAssessment | null;
 };
 
 type AiDraftState = {
@@ -44,17 +47,24 @@ export default function HomePage() {
   const [aiDrafts, setAiDrafts] = useState<Record<string, AiDraftState>>({});
 
   const selected = demoTickets.find((ticket) => ticket.id === selectedId) ?? demoTickets[0];
-  const decision = useMemo(() => (selected ? runSupportFlow(selected, knowledgeBase) : null), [selected]);
-  const decisions = demoTickets.map((ticket) => ({ ticket, decision: runSupportFlow(ticket, knowledgeBase) }));
+  const decision = useMemo(
+    () => (selected ? runLocalSupportFlowWithBilling(selected, knowledgeBase) : null),
+    [selected],
+  );
+  const billingScenario = selected ? findSyntheticBillingScenario(selected.billingScenarioId) : undefined;
+  const decisions = demoTickets.map((ticket) => ({
+    ticket,
+    decision: runLocalSupportFlowWithBilling(ticket, knowledgeBase),
+  }));
 
   const metrics = {
     total: decisions.length,
-    escalations: decisions.filter(({ decision }) => decision.escalate).length,
+    billingCases: decisions.filter(({ decision: itemDecision }) => Boolean(itemDecision.billing)).length,
+    escalations: decisions.filter(({ decision: itemDecision }) => itemDecision.escalate).length,
     avgConfidence:
       decisions.length === 0
         ? 0
         : decisions.reduce((sum, item) => sum + item.decision.confidence, 0) / decisions.length,
-    tier3: decisions.filter(({ decision }) => decision.classification.tier === 3).length,
   };
 
   const vocCounts = new Map<string, number>();
@@ -108,16 +118,16 @@ export default function HomePage() {
         <div>
           <div className="eyebrow">PUBLIC AI SUPPORT PORTFOLIO</div>
           <h1>BrewSupport Flow AI</h1>
-          <p>Human-governed support automation for high-volume SaaS operations.</p>
+          <p>Human-governed support automation for high-volume SaaS and billing operations.</p>
         </div>
-        <div className="safetyBadge">Synthetic data only</div>
+        <div className="safetyBadge">Synthetic customer + billing data only</div>
       </header>
 
       <section className="metrics" aria-label="Support metrics">
         <Metric label="Tickets" value={String(metrics.total)} />
+        <Metric label="Billing cases" value={String(metrics.billingCases)} />
         <Metric label="Escalations" value={String(metrics.escalations)} />
         <Metric label="Avg. confidence" value={`${Math.round(metrics.avgConfidence * 100)}%`} />
-        <Metric label="Tier 3" value={String(metrics.tier3)} />
       </section>
 
       <section className="workspace">
@@ -149,7 +159,7 @@ export default function HomePage() {
                   <p>{ticket.body}</p>
                   <div className="ticketMeta">
                     <span>Tier {itemDecision.classification.tier}</span>
-                    <span>{Math.round(itemDecision.confidence * 100)}%</span>
+                    <span>{itemDecision.billing ? "Billing" : "General"}</span>
                     <span className={`status status-${itemStatus}`}>{itemStatus}</span>
                   </div>
                 </button>
@@ -188,6 +198,52 @@ export default function HomePage() {
             </InfoCard>
           </div>
 
+          {decision.billing && billingScenario && (
+            <div className="sectionBlock billingSection">
+              <div className="sectionTitle billingTitle">
+                <div>
+                  <span>Synthetic billing state</span>
+                  <small>Stripe-style support fixture · no live account connection</small>
+                </div>
+                <span className={`authorityPill authority-${decision.billing.authority}`}>
+                  {decision.billing.authority.replaceAll("-", " ")}
+                </span>
+              </div>
+
+              <div className="billingGrid">
+                <BillingState label="Subscription" value={`${billingScenario.subscription.status} · ${billingScenario.subscription.plan}`} />
+                <BillingState label="Payment" value={billingScenario.payment.status} />
+                <BillingState label="App entitlement" value={billingScenario.applicationEntitlement} />
+                <BillingState label="Invoice" value={billingScenario.invoice?.status ?? "none"} />
+              </div>
+
+              <div className="billingSummary">{decision.billing.summary}</div>
+
+              <div className="billingPolicyGrid">
+                <div className="billingPolicyCard">
+                  <span className="kicker">Automation may</span>
+                  <div className="tagRow">
+                    {decision.billing.recommendedActions.map((action) => (
+                      <span className="tag allowedTag" key={action}>{action.replaceAll("_", " ")}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="billingPolicyCard">
+                  <span className="kicker">Automation may not</span>
+                  <div className="tagRow">
+                    {decision.billing.prohibitedActions.map((action) => (
+                      <span className="tag blockedTag" key={action}>{action.replaceAll("_", " ")}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="billingEvidence">
+                {decision.billing.evidence.map((item) => <code key={item}>{item}</code>)}
+              </div>
+            </div>
+          )}
+
           <div className="sectionBlock">
             <div className="sectionTitle">
               <span>Deterministic retrieval baseline</span>
@@ -222,7 +278,7 @@ export default function HomePage() {
             <div className="sectionTitle aiDraftTitle">
               <div>
                 <span>Governed AI + hybrid RAG</span>
-                <small>Semantic retrieval · structured output · deterministic policy authority</small>
+                <small>Semantic retrieval · structured output · billing policy stays deterministic</small>
               </div>
               <button className="aiButton" onClick={generateAiDraft} disabled={aiDraftState?.loading}>
                 {aiDraftState?.loading ? "Running…" : aiDraftState?.result ? "Run AI + RAG again" : "Run AI + RAG"}
@@ -231,7 +287,7 @@ export default function HomePage() {
 
             {!aiDraftState?.result && !aiDraftState?.error && (
               <div className="aiEmptyState">
-                Run the provider-backed workflow to combine lexical and semantic KB evidence before drafting. If embeddings or drafting are unavailable, the system degrades safely to deterministic retrieval and response behavior.
+                Run the provider-backed workflow to combine lexical and semantic KB evidence before drafting. Synthetic billing evidence may inform the explanation, but refunds, payment changes, disputes, subscription mutations, and forced entitlements remain outside model authority.
               </div>
             )}
 
@@ -249,6 +305,9 @@ export default function HomePage() {
                       ? `${aiDraftState.result.retrieval.provider} · ${aiDraftState.result.retrieval.model ?? "embedding model"}`
                       : "Deterministic retrieval"}
                   </span>
+                  {aiDraftState.result.billing && (
+                    <span>Billing: {aiDraftState.result.billing.authority.replaceAll("-", " ")}</span>
+                  )}
                 </div>
 
                 <div className="kbList">
@@ -331,14 +390,14 @@ export default function HomePage() {
 
           <div className="principleCard">
             <span className="kicker">OPERATING PRINCIPLE</span>
-            <strong>AI may recommend. Policy retains authority.</strong>
-            <p>Semantic retrieval can improve context, but security, fraud, disputes, ambiguous answers, and Tier 3 cases remain human-governed.</p>
+            <strong>Explain automatically. Mutate consequential state deliberately.</strong>
+            <p>AI and retrieval may improve support answers, but financial actions, disputes, security cases, and unsafe account changes remain human-governed.</p>
           </div>
         </aside>
       </section>
 
       <footer>
-        BrewSupport Flow AI · Built by Randy Brewington · Portfolio demonstration · No real customer or billing data
+        BrewSupport Flow AI · Built by Randy Brewington · Portfolio demonstration · No real customer, Stripe, or payment data
       </footer>
     </main>
   );
@@ -358,6 +417,15 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
     <div className="infoCard">
       <span className="kicker">{title}</span>
       {children}
+    </div>
+  );
+}
+
+function BillingState({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="billingState">
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
