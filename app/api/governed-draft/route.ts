@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { generateGovernedDraft } from "../../../src/ai/governedDraft";
 import { OpenAiDraftProvider } from "../../../src/ai/openAiDraftProvider";
+import { runHybridSupportFlowWithBilling } from "../../../src/billing/runBillingSupportFlow";
 import { demoTickets, knowledgeBase } from "../../../src/demoData";
-import { runHybridSupportFlow } from "../../../src/retrieval/hybridSupportFlow";
 import { OpenAiEmbeddingProvider } from "../../../src/retrieval/openAiEmbeddingProvider";
 
 export const runtime = "nodejs";
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   }
 
   // Public portfolio safety boundary: the route accepts only pre-defined synthetic fixtures.
-  // It is intentionally not an unrestricted proxy for arbitrary user text or OpenAI usage.
+  // It is intentionally not an unrestricted proxy for arbitrary user text, OpenAI usage, or billing actions.
   const ticket = demoTickets.find((item) => item.id === ticketId);
   if (!ticket) {
     return NextResponse.json({ error: "Unknown synthetic ticket" }, { status: 404 });
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       })
     : undefined;
 
-  const decision = await runHybridSupportFlow(ticket, knowledgeBase, embeddingProvider);
+  const decision = await runHybridSupportFlowWithBilling(ticket, knowledgeBase, embeddingProvider);
 
   const draftProvider = apiKey
     ? new OpenAiDraftProvider({
@@ -70,6 +70,7 @@ export async function POST(request: Request) {
         semanticScore: result.semanticScore ?? null,
         strategy: result.strategy ?? "lexical",
       })),
+      billing: decision.billing ?? null,
       ...governedDraft,
     },
     {
