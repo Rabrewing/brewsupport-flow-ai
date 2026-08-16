@@ -1,3 +1,4 @@
+import type { BillingSupportAssessment } from "../billing/types";
 import type { Classification, RetrievalResult, SupportTicket } from "../types";
 
 export interface DraftContext {
@@ -7,6 +8,7 @@ export interface DraftContext {
   confidence: number;
   requiresHumanReview: boolean;
   escalationReasons: string[];
+  billing?: BillingSupportAssessment;
 }
 
 export interface ProviderDraft {
