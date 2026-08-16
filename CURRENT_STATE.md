@@ -1,13 +1,14 @@
 # BrewSupport Flow AI — Current State
 
 ## Status
-**BSF-3 / Semantic RAG: MERGED / CERTIFIED**
+**BSF-4 / Stripe Support Simulator: IMPLEMENTED / CERTIFICATION IN PROGRESS**
 
-Merged to `main` via PR #3 on 2026-08-16.
+Branch: `bsf-4-stripe-support-simulator`  
+PR: #4
 
-BSF-1, BSF-2, and BSF-3 are merged and certified on `main`.
+BSF-1, BSF-2, and BSF-3 remain merged and certified on `main`.
 
-## Implemented through BSF-3
+## Implemented through BSF-4
 - Public-portfolio engineering constitution and IP boundaries
 - TypeScript support workflow foundation
 - Deterministic ticket classification
@@ -24,80 +25,92 @@ BSF-1, BSF-2, and BSF-3 are merged and certified on `main`.
 - Bounded drafting timeout and deterministic fallback
 - Provider-neutral embedding contract
 - Server-side OpenAI embeddings adapter
-- Default semantic model configuration: `text-embedding-3-small`
-- Hybrid lexical + semantic retrieval
-- Retrieval provenance: lexical, semantic, and combined scores
-- Semantic retrieval integrated into the governed drafting route
-- Safe lexical fallback on embedding outage, timeout, malformed vectors, invalid dimensions, or other semantic failures
-- Dashboard visualization for RAG mode, provider/model, retrieval strategy, and score breakdown
-- Retrieval-focused tests plus existing BSF-1 / BSF-2 safety tests
+- Hybrid lexical + semantic retrieval with provenance and lexical fallback
+- Synthetic Stripe-style billing scenario contracts and fixtures
+- Deterministic billing authority classes
+- Explicit allowed/recommended vs prohibited billing actions
+- Synthetic upgrade/entitlement mismatch, payment failure, cancellation, reactivation, invoice, refund, and dispute scenarios
+- Billing evidence passed into governed drafting as context without granting model authority
+- Dashboard visualization for subscription/payment/entitlement/invoice state and billing authority
+- Billing-specific authority tests plus existing support, AI, and retrieval tests
 - GitHub Actions CI gate covering production dependency audit, tests, strict TypeScript, and production build
 - Durable community / GitHub Marketplace direction in `docs/ROADMAP.md`
 
-## Retrieval architecture
-The deterministic lexical retriever is never removed. When an embedding provider is configured, semantic similarity is combined with lexical evidence using a hybrid ranker. The final retrieval score can influence the retrieval component of confidence, but semantic retrieval does not control policy.
+## BSF-4 billing authority model
 
-Default hybrid weights:
-- lexical: 35%
-- semantic: 65%
+### Automated explanation
+Support automation may explain verified synthetic state and recommend an approved next step for cases such as failed payment, period-end cancellation, reactivation, and invoice guidance.
 
-Every hybrid result can expose:
-- combined score
-- lexical score
-- semantic score
-- retrieval strategy (`lexical`, `semantic`, or `hybrid`)
+### Human approval required
+Refund requests and subscription/application entitlement mismatches may be summarized and routed, but consequential mutation requires authorized human review.
+
+### Specialist escalation
+Chargebacks and disputes require specialist review regardless of model confidence or retrieval quality.
+
+## Prohibited automated billing actions
+BrewSupport does not autonomously:
+- issue refunds
+- reverse charges
+- change payment methods
+- resolve disputes
+- alter subscriptions
+- alter financial records
+- force entitlements
 
 ## Authority architecture
-AI generation and semantic retrieval are advisory/evidence components, not policy authorities.
+AI generation, semantic retrieval, and billing-state explanation are advisory/evidence capabilities.
 
-Deterministic application logic retains exclusive authority over:
+Deterministic application logic retains authority over:
 - support tier
 - severity
 - risk signals
-- escalation state
-- escalation reasons
+- billing authority class
+- human-review requirement
+- escalation state and reasons
 - approval state
-
-Tier 3, high-risk, and low-confidence cases remain human-governed regardless of semantic relevance or model output.
+- prohibited consequential actions
 
 ## Public / data safety
+- No live Stripe account required or connected
 - No production BrewVerse code
 - No real customer data
-- No real Stripe data or credentials
-- No proprietary Brew Agentic / BrewAssist runtime copied into this project
+- No real Stripe IDs or payment information
+- No Stripe secret keys or webhook secrets
+- No production BrewLotto billing implementation copied into this repository
+- Synthetic IDs such as `sub_demo_*`, `pi_demo_*`, and `in_demo_*` only
+- Demo invoice URLs use the non-routable `example.invalid` domain
 - OpenAI credentials remain server-side only
 - Public route accepts synthetic ticket IDs rather than arbitrary prompt text
 - No open-source license granted at this time
 
-## BSF-3 certification evidence
-Final PR-head validation passed on 2026-08-16:
-1. Dependency installation — PASS / 0 vulnerabilities reported
-2. High-severity production dependency audit — PASS / 0 vulnerabilities
-3. Unit tests — PASS / 16 passed, 0 failed
-4. Strict TypeScript type checking — PASS
-5. Next.js 16.3.1 production build — PASS
-6. Dynamic `/api/governed-draft` route included in production build — PASS
+## BSF-4 certification targets
+The exact final PR head must pass:
+1. Dependency installation
+2. High-severity production dependency audit
+3. Complete unit suite including billing authority tests
+4. Strict TypeScript type checking
+5. Next.js production build
+6. Dynamic `/api/governed-draft` route in the production build
 
-The certified suite proves:
-- semantic evidence can strengthen a relevant KB match
-- no embedding provider preserves the existing lexical path
-- embedding-provider failure degrades safely to lexical retrieval
-- malformed vectors degrade safely to lexical retrieval
-- OpenAI embedding responses are ordered by provider index
-- response-count mismatch is rejected
-- security escalation remains deterministic under successful semantic retrieval
-- existing BSF-2 model authority boundaries remain intact
+The BSF-4 suite is designed to prove:
+- entitlement mismatch cannot force access without review
+- failed payments can be explained without payment-method mutation
+- period-end cancellation state can be explained safely
+- reactivation and invoice guidance do not require financial mutation
+- refund requests force human approval and cannot issue refunds
+- disputes/chargebacks force specialist escalation and cannot be auto-resolved
+- billing evidence reaches governed AI drafting without changing deterministic authority
+- all BSF-1/2/3 safety and retrieval boundaries remain intact
 
-## Current milestone
-**BSF-4 — Stripe Support Simulator**
+## Next milestone after certification
+**BSF-5 — Support Operations Intelligence**
 
 Planned scope:
-1. Synthetic refund-request scenarios
-2. Failed-payment and invoice scenarios
-3. Cancellation / reactivation scenarios
-4. Upgrade / entitlement mismatch scenarios
-5. Dispute / chargeback scenarios that force human review
-6. No real Stripe credentials, IDs, or customer/payment data
+1. Throughput and escalation analytics
+2. Recurring issue-pattern analysis
+3. Confidence distribution
+4. Billing/support category trends
+5. Voice-of-Customer aggregation and actionable summaries
 
 ## Longer-term direction
 Job-readiness remains the immediate priority. After the core portfolio milestones, the planned community path is contributor readiness, then extraction of a dedicated GitHub Action for possible Marketplace publication, with a GitHub App considered only if real adoption justifies it. See `docs/ROADMAP.md`.
