@@ -17,6 +17,7 @@
 - Dedicated `/intelligence` operations dashboard
 - Global navigation between the support workspace and operations-intelligence view
 - `docs/BSF-5_ARCHITECTURE.md`
+- `docs/BSF-5_CERTIFICATION.md`
 - 8 operations-intelligence regression tests
 
 ### Architecture / Governance
@@ -28,13 +29,15 @@
 - Synthetic historical IDs use `HIST-*`; no production support history is present
 
 ### Validation
-- Implementation-head dependency installation reported 0 vulnerabilities
+- BSF-5 merged via PR #5 and certification closeout merged via PR #6
+- Final PR #5 head `0b3d0d5cb15184b62539ce06fdb87654b03de498` passed the complete CI gate
+- Dependency installation reported 0 vulnerabilities
 - High-severity production dependency audit passed with 0 vulnerabilities
 - 32 unit tests passed, 0 failed
 - Strict TypeScript check passed
 - Next.js 16.3.1 production build passed
 - Production build includes dynamic `/api/governed-draft` and static `/intelligence` routes
-- Final PR-head and post-merge `main` certification pending documentation closeout
+- Certification-closeout head `6efce0d5931517a352ef80e177df50c92773a6e8` passed the same configured CI gate before merge
 
 ## 0.5.0 — 2026-08-16
 
