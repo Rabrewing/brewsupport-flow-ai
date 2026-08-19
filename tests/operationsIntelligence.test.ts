@@ -33,14 +33,16 @@ test("operations summary calculates deterministic throughput and response median
   assert.equal(intelligence.summary.reopenedCases, 2);
 });
 
-test("category trends expose billing concentration and policy escalation rate", () => {
+test("category trends preserve category separately from cross-cutting billing involvement", () => {
   const intelligence = buildSupportOperationsIntelligence(records);
   const billing = intelligence.categoryTrends.find((trend) => trend.category === "billing");
   assert.ok(billing);
-  assert.equal(billing.count, 8);
-  assert.equal(billing.share, 0.57);
+  assert.equal(billing.count, 7);
+  assert.equal(billing.share, 0.5);
   assert.ok(billing.averageConfidence > 0);
   assert.ok(billing.escalationRate > 0);
+  assert.equal(intelligence.billingTrend.totalCases, 8);
+  assert.ok(intelligence.billingTrend.totalCases > billing.count);
 });
 
 test("billing intelligence separates explanation, human approval, and specialist authority", () => {
@@ -71,7 +73,7 @@ test("recurring issue patterns aggregate VOC themes into actionable evidence", (
   const intelligence = buildSupportOperationsIntelligence(records);
   const billingPattern = intelligence.recurringPatterns.find((pattern) => pattern.theme === "billing");
   assert.ok(billingPattern);
-  assert.equal(billingPattern.count, 8);
+  assert.equal(billingPattern.count, 7);
   assert.match(billingPattern.recommendation, /billing/i);
   assert.ok(intelligence.vocActions.some((action) => action.theme === "billing" && action.priority === "act"));
 });
