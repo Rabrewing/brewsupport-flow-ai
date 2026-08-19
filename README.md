@@ -132,7 +132,7 @@ Primary support category and billing involvement remain separate dimensions. For
 
 The operations layer can identify where the team should investigate, improve knowledge, or create clearer self-service. It cannot change the classification, confidence, billing authority, escalation, approval state, or outcome of an individual support case.
 
-See `docs/BSF-5_ARCHITECTURE.md`.
+See `docs/BSF-5_ARCHITECTURE.md` and `docs/BSF-5_CERTIFICATION.md`.
 
 ## Dashboard
 
@@ -201,16 +201,16 @@ The portfolio now has two linked views.
 - 24-test certified suite across support, AI, RAG, and billing authority
 - No real customer or Stripe data
 
-### BSF-5 — Support Operations Intelligence — Implemented / certification in progress
+### BSF-5 — Support Operations Intelligence — Complete
 - Deterministic throughput, latency, and escalation analytics
 - Recurring issue-pattern analysis
 - Confidence distribution
 - Billing/support category trends
 - Evidence-backed Voice-of-Customer action queue
 - Dedicated `/intelligence` dashboard
-- 32-test suite currently passing on the implementation branch
+- 32-test certified suite across support, AI, RAG, billing authority, and operations intelligence
 
-The longer-term community and GitHub Marketplace direction is documented in `docs/ROADMAP.md`. The immediate priority remains job-readiness and a credible public engineering portfolio.
+The planned BSF-1 through BSF-5 core portfolio architecture is complete. The default priority returns to job-readiness and interview fluency before additional feature expansion. The longer-term community and GitHub Marketplace direction is documented in `docs/ROADMAP.md`.
 
 ## Public portfolio safety
 
