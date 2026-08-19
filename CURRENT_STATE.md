@@ -107,7 +107,7 @@ Operations intelligence may count, aggregate, compare, identify recurring patter
 
 ## BSF-5 certification evidence
 
-### Final PR head
+### Final feature PR head
 Exact PR #5 head `0b3d0d5cb15184b62539ce06fdb87654b03de498` passed the complete GitHub Actions gate on 2026-08-19:
 1. Dependency installation — PASS / 0 vulnerabilities reported
 2. High-severity production dependency audit — PASS / 0 vulnerabilities
@@ -117,10 +117,10 @@ Exact PR #5 head `0b3d0d5cb15184b62539ce06fdb87654b03de498` passed the complete 
 6. Dynamic `/api/governed-draft` route included in production build — PASS
 7. Static `/intelligence` operations dashboard included in production build — PASS
 
-### Merge
-PR #5 was squash-merged to `main` as `c480fbeb5273dd119bf3fdd69dd19536b3b83738`.
-
-The certification-closeout branch exists only to update public state documentation after the already-certified implementation merge. Its exact head must also pass the same complete CI gate before the closeout PR is merged.
+### Merge and documentation closeout
+- PR #5 was squash-merged to `main` as `c480fbeb5273dd119bf3fdd69dd19536b3b83738`.
+- Certification-closeout PR #6 exact head `6efce0d5931517a352ef80e177df50c92773a6e8` passed the same configured CI gate and was merged to `main`.
+- Public-status hygiene PR #7 exact head `5cda5c0b83e58dc62f4bad51bfb0d3cb6133b196` passed the same configured CI gate and was merged to remove stale pre-certification wording from README and CHANGELOG.
 
 ## What the 32-test suite proves
 - all 24 BSF-1 through BSF-4 support, AI, RAG, and billing tests remain green
