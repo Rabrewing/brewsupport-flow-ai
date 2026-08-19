@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.6.0 — 2026-08-19
+
+### Added
+- Typed support-operations intelligence contracts
+- Synthetic historical support dataset separate from the active demo queue
+- Synthetic lifecycle observations for received, first-response, resolution, outcome, and reopened state
+- Deterministic throughput, resolution-rate, escalation-rate, and reopened-case analytics
+- Median first-response and resolution latency with invalid/reversed timestamp exclusion
+- Average daily intake and resolved throughput
+- Category volume/share, escalation-rate, and average-confidence trends
+- Confidence-band distribution
+- Cross-cutting billing-involvement and billing-authority analytics
+- Recurring issue-pattern aggregation over deterministic Voice-of-Customer themes
+- Deterministic `act` / `review` / `watch` Voice-of-Customer action queue with inspectable evidence
+- Dedicated `/intelligence` operations dashboard
+- Global navigation between the support workspace and operations-intelligence view
+- `docs/BSF-5_ARCHITECTURE.md`
+- 8 operations-intelligence regression tests
+
+### Architecture / Governance
+- Operations intelligence consumes existing support decisions rather than reimplementing or overriding support policy
+- Operational observations remain separate from ticket content and support decision contracts
+- Primary support category remains separate from cross-cutting billing involvement
+- Confidence analytics remain evidence only and cannot suppress deterministic escalation
+- Analytics may count, aggregate, compare, identify patterns, and recommend investigation; analytics cannot mutate customer/account/billing state or change an individual case decision
+- Synthetic historical IDs use `HIST-*`; no production support history is present
+
+### Validation
+- Implementation-head dependency installation reported 0 vulnerabilities
+- High-severity production dependency audit passed with 0 vulnerabilities
+- 32 unit tests passed, 0 failed
+- Strict TypeScript check passed
+- Next.js 16.3.1 production build passed
+- Production build includes dynamic `/api/governed-draft` and static `/intelligence` routes
+- Final PR-head and post-merge `main` certification pending documentation closeout
+
 ## 0.5.0 — 2026-08-16
 
 ### Added

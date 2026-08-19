@@ -1,6 +1,6 @@
 {
   "name": "brewsupport-flow-ai",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "description": "Public portfolio reference implementation for trustworthy AI-assisted SaaS support automation.",
   "type": "module",
