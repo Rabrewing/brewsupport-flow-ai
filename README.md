@@ -4,15 +4,15 @@
 
 BrewSupport Flow AI demonstrates an end-to-end support workflow designed for high-volume SaaS customer operations:
 
-**Ticket → Classify → Retrieve KB Context → Hybrid RAG → Billing Evidence → Governed Draft → Confidence / Policy → Escalate if Needed → Summarize Voice of Customer**
+**Ticket → Classify → Retrieve KB Context → Hybrid RAG → Billing Evidence → Governed Draft → Confidence / Policy → Escalate if Needed → Summarize Voice of Customer → Aggregate Operations Intelligence**
 
-The project is intentionally built with **synthetic customer and billing data only**. It does not contain production BrewVerse source code, customer data, credentials, or proprietary implementation details from BrewLotto, BrewAssist, Brew Agentic, BrewSearch, or Project Zahav.
+The project is intentionally built with **synthetic customer, billing, and support-history data only**. It does not contain production BrewVerse source code, customer data, credentials, or proprietary implementation details from BrewLotto, BrewAssist, Brew Agentic, BrewSearch, or Project Zahav.
 
 ## Why this project exists
 
 Modern support teams should not use AI simply to generate faster replies. A trustworthy support workflow needs retrieval, confidence thresholds, escalation boundaries, billing authority boundaries, auditability, provider failure handling, and feedback loops into product and engineering.
 
-BrewSupport Flow AI demonstrates that operating model in a small, inspectable codebase with an interactive support-operations dashboard.
+BrewSupport Flow AI demonstrates that operating model in a small, inspectable codebase with an interactive support workspace and a dedicated operations-intelligence view.
 
 ## Workflow
 
@@ -25,8 +25,9 @@ BrewSupport Flow AI demonstrates that operating model in a small, inspectable co
 7. **Draft** a grounded customer response from either the deterministic baseline or a governed AI provider.
 8. **Validate** provider output against a strict schema and the exact KB evidence retrieved for the case.
 9. **Escalate** when confidence is low or the ticket involves refunds, disputes, security, unsafe entitlement changes, data loss, or other high-risk conditions.
-10. **Summarize Voice of Customer** signals into recurring themes for product and engineering.
+10. **Summarize Voice of Customer** signals into themes for product and engineering.
 11. **Require human approval** when deterministic policy says a case is unsafe to auto-resolve.
+12. **Aggregate operations intelligence** from support decisions and separate synthetic lifecycle observations without changing support authority.
 
 ## Current architecture
 
@@ -52,8 +53,11 @@ BrewSupport Flow AI demonstrates that operating model in a small, inspectable co
 - Deterministic billing authority classes
 - Explicit recommended and prohibited billing actions
 - Voice-of-Customer theme extraction
-- Responsive support dashboard
-- Policy-focused, retrieval-focused, and billing-authority tests
+- Synthetic historical support observations separate from active demo tickets
+- Deterministic throughput, latency, escalation, category, confidence, and billing-authority analytics
+- Recurring issue-pattern analysis and evidence-backed Voice-of-Customer action queue
+- Responsive support workspace plus dedicated `/intelligence` operations view
+- Policy, retrieval, billing-authority, and operations-intelligence regression tests
 - GitHub Actions validation for production dependency audit, tests, strict type checking, and production build
 
 ## Governed AI drafting
@@ -106,9 +110,35 @@ The AI provider may use the synthetic billing assessment as grounding context, b
 
 See `docs/BSF-4_ARCHITECTURE.md`.
 
+## Support Operations Intelligence
+
+BSF-5 adds an observational analytics layer over deterministic support decisions and a separate synthetic historical lifecycle dataset.
+
+The operations engine calculates:
+
+- historical case volume
+- resolved/open counts and resolution rate
+- policy escalation count and rate
+- median first-response and resolution latency
+- average daily intake and resolved throughput
+- reopened case count
+- category share, escalation rate, and average confidence
+- confidence-band distribution
+- billing involvement and billing-authority distribution
+- recurring Voice-of-Customer patterns
+- prioritized, evidence-backed operational action recommendations
+
+Primary support category and billing involvement remain separate dimensions. For example, a dispute may enter a high-risk/security escalation lane while still being measured as a billing-involved case with specialist authority.
+
+The operations layer can identify where the team should investigate, improve knowledge, or create clearer self-service. It cannot change the classification, confidence, billing authority, escalation, approval state, or outcome of an individual support case.
+
+See `docs/BSF-5_ARCHITECTURE.md`.
+
 ## Dashboard
 
-The dashboard demonstrates:
+The portfolio now has two linked views.
+
+### Support workspace — `/`
 
 - Ticket queue and case-detail workspace
 - Tier 1 / Tier 2 / Tier 3 classification
@@ -124,10 +154,20 @@ The dashboard demonstrates:
 - Visible semantic and drafting fallback states
 - Approve / escalate workflow
 - Deterministic blocking of unsafe approvals
-- Voice-of-Customer intelligence
-- Synthetic support-operations metrics
+- Current-case Voice-of-Customer themes
 
-**AI may recommend; deterministic policy retains authority.**
+### Operations intelligence — `/intelligence`
+
+- Throughput and resolution metrics
+- Median first-response and resolution latency
+- Category mix and escalation rates
+- Confidence distribution
+- Billing authority mix
+- Recurring issue patterns
+- Prioritized Voice-of-Customer action queue
+- Explicit analytics-versus-authority architecture boundary
+
+**AI may recommend; deterministic policy retains authority. Analytics may observe; analytics does not mutate.**
 
 ## Roadmap
 
@@ -161,12 +201,14 @@ The dashboard demonstrates:
 - 24-test certified suite across support, AI, RAG, and billing authority
 - No real customer or Stripe data
 
-### BSF-5 — Support Operations Intelligence — Active
-- Throughput and escalation analytics
-- Recurring issue patterns
+### BSF-5 — Support Operations Intelligence — Implemented / certification in progress
+- Deterministic throughput, latency, and escalation analytics
+- Recurring issue-pattern analysis
 - Confidence distribution
 - Billing/support category trends
-- Voice-of-Customer summaries
+- Evidence-backed Voice-of-Customer action queue
+- Dedicated `/intelligence` dashboard
+- 32-test suite currently passing on the implementation branch
 
 The longer-term community and GitHub Marketplace direction is documented in `docs/ROADMAP.md`. The immediate priority remains job-readiness and a credible public engineering portfolio.
 
@@ -180,6 +222,7 @@ This repository is intentionally public and follows strict boundaries:
 - No live Stripe connection or Stripe secret keys
 - No real Stripe IDs, payment information, or webhook secrets
 - Synthetic identifiers use obvious demo prefixes
+- Synthetic historical tickets use `HIST-*` identifiers
 - Demo invoice URLs use `example.invalid`
 - No internal infrastructure addresses
 - Provider credentials stay server-side in environment configuration
@@ -198,7 +241,9 @@ npm run build
 npm run dev
 ```
 
-The dashboard works without an AI key by using deterministic lexical retrieval, synthetic billing evidence, and deterministic drafting fallback. To exercise provider-backed semantic retrieval and drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
+Open `/` for the support workspace and `/intelligence` for BSF-5 operations intelligence.
+
+The support workflow works without an AI key by using deterministic lexical retrieval, synthetic billing evidence, and deterministic drafting fallback. To exercise provider-backed semantic retrieval and drafting locally, copy `.env.example` to a local ignored environment file and provide a server-side `OPENAI_API_KEY`.
 
 ## Example support decision
 
@@ -215,6 +260,27 @@ AI authority: explanation / drafting only
 Prohibited automation: issue refund, reverse charge, alter financial records
 Action: grounded response + route for authorized review
 VOC theme: refund request
+```
+
+## Example operations question
+
+```text
+Question: What should the support team investigate next?
+
+Evidence:
+- recurring theme frequency
+- share of support history
+- escalation rate
+- average confidence
+- billing authority distribution when relevant
+
+Output:
+- deterministic priority: act / review / watch
+- inspectable evidence string
+- recommended knowledge, product, or workflow investigation
+
+Authority:
+- analytics cannot change an individual ticket decision
 ```
 
 ## Author
