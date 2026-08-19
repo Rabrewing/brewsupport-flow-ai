@@ -3,24 +3,39 @@
 ## Priority order
 
 ### 1. Job-readiness first
-BrewSupport Flow AI exists first as a strong, inspectable public engineering portfolio for Randy Brewington's technical customer support / AI automation job search, with Hercules as the immediate target role.
+BrewSupport Flow AI exists first as a strong, inspectable public engineering portfolio for Randy Brewington's technical customer support / AI automation and AI solutions-engineering job search.
 
 The repository should demonstrate real engineering judgment without exposing proprietary BrewVerse implementation code or pretending synthetic support fixtures are production customer traffic.
 
 ### 2. Complete the portfolio-quality support architecture
-Current milestone sequence:
+Core milestone sequence:
 
 - **BSF-1 — Interactive Support Operations Dashboard** — merged / certified
 - **BSF-2 — Governed AI Provider Layer** — merged / certified
 - **BSF-3 — Semantic RAG** — merged / certified
 - **BSF-4 — Stripe Support Simulator** — merged / certified
-- **BSF-5 — Support Operations Intelligence** — active
+- **BSF-5 — Support Operations Intelligence** — implemented / final certification in progress
 
 BSF-4 established realistic synthetic billing-support cases while preserving the rule that explanation and recommendation are different from authority to mutate money or account state.
 
-BSF-5 will turn individual support decisions into operational intelligence: throughput, escalation rates, category/billing trends, confidence distribution, recurring issue patterns, and actionable Voice-of-Customer summaries.
+BSF-5 completes the planned core portfolio architecture by turning individual deterministic support decisions into operational intelligence: throughput and latency, escalation rates, category and billing trends, confidence distribution, recurring issue patterns, and an evidence-backed Voice-of-Customer action queue.
 
-### 3. Community contribution direction
+The analytics layer remains observational. It may identify patterns and recommend areas to investigate, but it cannot change the authority or outcome of an individual support case.
+
+### 3. Return focus to job-readiness and interview fluency
+After BSF-5 certification, the default priority is not immediate feature expansion. The next step is to use the completed architecture as interview proof and make sure the implementation can be explained clearly at multiple levels:
+
+- product problem and user value
+- support-operations workflow
+- AI / RAG architecture
+- deterministic authority and human governance
+- synthetic Stripe-support design
+- evaluation and regression strategy
+- operations-intelligence metrics and failure handling
+
+New product features should be added only when they materially strengthen the portfolio, address a real architectural gap, or support the later community direction.
+
+### 4. Community contribution direction
 After the core portfolio milestones are stable, make the repository contributor-friendly without weakening its public-IP boundaries or safety model.
 
 Planned community work:
@@ -33,7 +48,9 @@ Planned community work:
 - contributor acknowledgements
 - deliberate licensing decision before inviting broad reuse
 
-### 4. GitHub Marketplace extraction
+The repository currently has no open-source license grant. Contributor-readiness work should not silently change that legal boundary.
+
+### 5. GitHub Marketplace extraction
 Do not turn the full reference application into a Marketplace artifact directly. Instead, extract reusable automation into a dedicated repository such as:
 
 `Rabrewing/brewsupport-flow-action`
@@ -44,7 +61,7 @@ Potential GitHub Action workflow:
 
 The Action should preserve the same authority principle as the reference application: model output can assist with classification, retrieval, and drafting, but deterministic policy or human review retains authority over security, billing, account access, refunds, disputes, and other consequential support actions.
 
-### 5. Possible future GitHub App
+### 6. Possible future GitHub App
 If the Action gains meaningful adoption, evaluate a hosted BrewSupport GitHub App for organization-level issue triage, knowledge retrieval, support intelligence, and Voice-of-Customer aggregation.
 
 This is a future product/community direction, not a prerequisite for the current job search.
